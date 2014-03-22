@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html>
+<head><title>PixelAnimator</title></head>
+<link rel="shortcut icon" type="image/ico" href="favicon.ico" /> 
+<style>*{//border: 1px solid grey; //<-durván bezavar a pontosságnak
+-moz-user-select: none; -webkit-user-select: none; -ms-user-select:none; user-select:none;}
+canvas{    image-rendering: optimizeSpeed;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+    -ms-interpolation-mode: nearest-neighbor;
+    }</style>
+	
+	
+	
+<body style="background:lightgrey;">
+
+    <p style="margin:0;">
+	<p id="debugp">debug</p>
+	<button type="button" name="toolrad" onclick="toolpick()" value="pencil">Pencil</button>
+	<button type="button" name="toolrad" value="rect-select">Rect-Select</button>
+	<button type="button" name="toolrad" value="free-select">Free-Select</button>
+	</p>
+
+<canvas id="drawcanvas" width="800" height="600" style="cursor: url(curpencil.cur),pointer" ></canvas> <br>
+<div id="timelinediv" style="width:100%; overflow:scroll; padding:0px; position:fixed; bottom:0; left:0;">
+	<canvas id="realcanvas" onclick="framepick()" width="800" height="200" style="margin:0px; "></canvas>
+	<div id="timelinepicker2" style="position:absolute; border: 2px solid red; width:50px;height:60px; display:inline-block;">e</div>
+</div>
+<div id="viewsettingsdiv" style="width:100%; padding:0px; position:fixed; bottom:0; left:0;">
+<button onclick="animate()">Play</button>
+fps:<input type="number" value=30 id="fpsinput" style="width:40px;">
+zoom:×<input type="number" value=5 id="zoominput" style="width:40px;">
+</div>
+<br>
+
+<br>
+
+<br>
+
+<script src="/pixelanimator/jquery-1.11.0.min.js"></script>
+<script>
+
+function btnspawn(){
+var btn=document.createElement("BUTTON");
+document.body.appendChild(btn);
+};
+
+function canvasresize(){
+var resizebuff = realctx.getImageData(0,0,realc.width,realc.height);
+realc.height+=20;
+realctx.putImageData(resizebuff,0,0);		
+};
+
+var animrunning=false;
+var zoomv=5;
+var fpsv=15;
+var currentframe=0;
+var spw=50; //spritewidth
+var sph=60;
+var col={r:50,g:0,b:0};
+
+//var tool="pencil";
+
+$('#fpsinput').bind('input', function() { fpsv=$(this).val(); });
+$('#zoominput').bind('input', function() { zoomv=$(this).val(); setcurrentframe(currentframe); });
+
+var timelinepicker=document.getElementById("timelinepicker2");
+timelinepicker.style.color="red";
+timelinepicker.style.width=(spw-10).toString()+"px";
+timelinepicker.style.height=(sph-10).toString()+"px";
+timelinepicker.style.top="5px";
+timelinepicker.style.left=(currentframe*spw+5).toString()+"px";
+
+
+var c=document.getElementById("drawcanvas");
+var ctx=c.getContext("2d");
+ctx.fillStyle="red";
+ctx.fillRect(0,0,600,300);
+
+var realc = document.getElementById("realcanvas"); //createElement('canvas');
+
+var realctx = realc.getContext('2d');
+
+
+//document.body
+document.getElementById("timelinediv").appendChild(realc);
+
+
+
+        ctx.imageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.mozImageSmoothingEnabled = false;
+		
+		realctx.imageSmoothingEnabled = false;
+        realctx.webkitImageSmoothingEnabled = false;
+        realctx.mozImageSmoothingEnabled = false;
+        
+
+
+/*function applyzoom(){
+var zoombuff = realctx.getImageData(0,0,realc.width,realc.height).data; alert(zoombuff.length);
+for(var i=0;i<zoombuff.length;i++){ctx.fillStyle="#000000"; ctx.fillRect((i/realctx.width)*zoomv,(i%realctx.width)*zoomv,zoomv,zoomv);}
+} */
+
+
+function copy()
+{
+var imgData=ctx.getImageData(10,10,50,50);
+ctx.putImageData(imgData,10,70);
+}
+
+var img = new Image(); img.src="/pixelanimator/trial2.png";
+img.onload=function(){
+  
+  //ctx.drawImage(img,0,0);
+  realc.width=img.width; realc.height=sph;
+  realctx.drawImage(img, 0, 0 , img.width,img.height);
+  realctx.translate(0.5, -0.5);
+  realctx.lineWidth=1;
+  realctx.beginPath();
+        realctx.moveTo(1, 2);
+		realctx.lineTo(170, 15);
+        realctx.stroke();
+  
+  viewsettingsdiv.style.bottom=(sph+25).toString()+"px";
+ var theData = realctx.getImageData(0, 0, img.width, img.height);
+  
+  var imgData=ctx.getImageData(0,0,c.width,c.height);
+  //ctx.putImageData(imgData,5,5,200,0,1200,600);
+
+  ctx.putImageData(theData,300,0);
+  
+  setcurrentframe(currentframe);
+
+  
+  
+  
+  /* // invert colors
+  for (var i=0;i<imgData.data.length;i+=4)
+    {
+    imgData.data[i]=255-imgData.data[i];
+    imgData.data[i+1]=255-imgData.data[i+1];
+    imgData.data[i+2]=255-imgData.data[i+2];
+    imgData.data[i+3]=255;
+    }
+  ctx.putImageData(imgData,0,0);*/
+};
+/*
+var img2 = new Image();
+img2.src = 'http://upload.wikimedia.org/wikipedia/commons/f/f0/Pixelart-tv-iso.png';
+
+img2.onload = function () { 
+        ctx.drawImage(realc, 0, 0, realc.width*zoomv, realc.height*zoomv);
+};
+*/
+
+
+
+
+function framepick(){if(!animrunning){
+ mouseX=(event.pageX - $(document).scrollLeft() - $('#realcanvas').offset().left);
+currentframe=Math.floor(mouseX/spw);
+setcurrentframe(currentframe);
+}}
+
+function setcurrentframe(currentframe)
+{
+  ctx.drawImage(realc, 50*currentframe, 0,  spw,sph,0,0,50*zoomv,60*zoomv);
+  timelinepicker.style.left=(currentframe*spw+5).toString()+"px";
+}
+
+
+
+	//requestinterval csak 60fps-nél kellene
+function animate()
+{if(!animrunning){currentframe=0;animrunning=true;
+   //TIMER
+
+var  timer = setInterval(function() {
+  //elem.style.left = ( left += 10 ) + "px";
+  setcurrentframe(currentframe);
+currentframe++;
+  if ( currentframe>12 ) {clearInterval( timer ); animrunning=false; currentframe=0; ctx.drawImage(realc, spw*currentframe, 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);}
+}, 1000/fpsv);
+}
+};
+
+
+
+
+    drawcanvas.addEventListener('mousedown', drawevent, false);
+    drawcanvas.addEventListener('mousemove', drawevent, false);
+    drawcanvas.addEventListener('mouseup',   drawevent, false);
+	drawcanvas.addEventListener('mouseout',   drawevent, false);
+
+	
+	  function drawevent (e) {
+    var func = tool[e.type];
+	//alert(func);
+    if (func) { func(e); }
+  }
+  
+  function toolpick (e) {
+   // if (tools[this.value]) {
+      //tool = tools.pencil;//new tools[this.value]();
+	  
+    //}
+  }
+  
+  /*
+ function line(x0, y0, x1, y1)
+   dx := abs(x1-x0)
+   dy := abs(y1-y0) 
+   if x0 < x1 then sx := 1 else sx := -1
+   if y0 < y1 then sy := 1 else sy := -1
+   err := dx-dy
+ 
+   loop
+     plot(x0,y0)
+     if x0 = x1 and y0 = y1 exit loop
+     e2 := 2*err
+     if e2 > -dy then 
+       err := err - dy
+       x0 := x0 + sx
+     end if
+     if e2 < dx then 
+       err := err + dx
+       y0 := y0 + sy 
+     end if
+   end loop
+   */
+//currpos=(Math.floor(mouseY/zoomv)*spw+Math.floor(mouseX/zoomv))*4;
+  function drawdataline(hova,lmx,lmy,mx,my){ //kimásolja a frame-t, datát módosít, visszamásol 
+	dx = Math.abs(mx-lmx);
+	dy = Math.abs(my-lmy);
+	sx = lmx < mx ?  1 : -1;
+	sy = lmy < my ?  1 : -1;
+	err = dx-dy;
+   
+	do{ currpos=(Math.floor(lmy/zoomv)*spw+Math.floor(lmx/zoomv))*4;
+  		hova.data[currpos  ]=col.r;
+		hova.data[currpos+1]=col.g;
+		hova.data[currpos+2]=col.b;
+		hova.data[currpos+3]=255;
+		
+		e2= 2*err;
+		if(e2 > -dy){ err = err - dy; lmx += sx}
+        if(e2 < dx){ err = err + dx; lmy+= sy }
+
+		}while(lmx!=mx || lmy!=my);
+  };
+  
+   function drawdataline2(hova,pix,lmx,lmy,mx,my){ 
+	dx = Math.abs(mx-lmx);
+	dy = Math.abs(my-lmy);
+	sx = lmx < mx ?  1 : -1;
+	sy = lmy < my ?  1 : -1;
+	err = dx-dy;
+   
+	do{ /*currpos=(Math.floor(lmy/zoomv)*spw+Math.floor(lmx/zoomv))*4;
+  		hova.data[currpos  ]=col.r;
+		hova.data[currpos+1]=col.g;
+		hova.data[currpos+2]=col.b;
+		hova.data[currpos+3]=255;*/
+		hova.putImageData(pix,Math.floor(lmx/zoomv)+spw*currentframe,Math.floor(lmy/zoomv));
+		
+		e2= 2*err;
+		if(e2 > -dy){ err = err - dy; lmx += sx}
+        if(e2 < dx){ err = err + dx; lmy+= sy }
+
+		}while(lmx!=mx || lmy!=my);
+  };
+  
+  
+
+  var tools = {};
+
+ tools.pencil = function () {
+    var tool = this;
+    this.started = false;
+	this.tracknum = 0;
+	this.drawbuff =null;
+
+    // This is called when you start holding down the mouse button.
+    // This starts the pencil drawing.
+    this.mousedown = function (e) {
+	mouseX=(e.clientX - $(document).scrollLeft() - $('#drawcanvas').offset().left);
+	mouseY=(e.clientY - $(document).scrollTop() - $('#drawcanvas').offset().top);
+       // realctx.beginPath();
+        //realctx.moveTo(mouseX,mouseY);
+        tool.started = true;
+		tool.tracknum = 0;
+		//tool.drawbuff = realctx.getImageData( 50*currentframe, 0,  spw,sph);
+		tool.drawpixel = realctx.createImageData(2,2); for(var i=0;i<4;i++){tool.drawpixel.data[0+i*4]=col.r; tool.drawpixel.data[1+i*4]=col.g; tool.drawpixel.data[2+i*4]=col.b; tool.drawpixel.data[3+i*4]=255;}
+		lastmX=mouseX;
+		lastmY=mouseY;
+		
+		//alert(mouseY+" "+mouseX)
+    };
+
+    // This function is called every time you move the mouse. Obviously, it only 
+    // draws if the tool.started state is set to true (when you are holding down 
+    // the mouse button).
+    this.mousemove = function (e) {
+	mouseX=(e.clientX - $(document).scrollLeft() - $('#drawcanvas').offset().left);
+	mouseY=(e.clientY - $(document).scrollTop() - $('#drawcanvas').offset().top);
+      if (tool.started) {
+      //  realctx.lineTo(mouseX, mouseY);
+       // realctx.stroke();
+	   
+		tool.tracknum++;
+		
+		//drawdataline(tool.drawbuff,lastmX,lastmY,mouseX,mouseY);
+		drawdataline2(realctx,tool.drawpixel,lastmX,lastmY,mouseX,mouseY);
+	document.getElementById("debugp").innerHTML=mouseX.toString();
+	//	realctx.putImageData(tool.drawbuff,50*currentframe, 0,Math.min(lastmX,mouseX)/zoomv,Math.min(lastmY,mouseY)/zoomv,Math.abs(lastmX-mouseX)/zoomv,Math.abs(lastmY-mouseY)/zoomv);	//alert(Math.min(lastmY,mouseY)-1)
+		//kell realctx.putImageData(tool.drawbuff,50*currentframe, 0);	
+		 setcurrentframe(currentframe);
+		lastmX=mouseX;
+		lastmY=mouseY;
+      }
+    };
+
+    // This is called when you release the mouse button.
+    this.mouseup = function (e) {
+	mouseX=(e.clientX - $(document).scrollLeft() - $('#drawcanvas').offset().left);
+	mouseY=(e.clientY - $(document).scrollTop() - $('#drawcanvas').offset().top);
+      if (tool.started) {
+        tool.mousemove(e);
+        tool.started = false;
+		//alert(tool.tracknum);
+		
+        //img_update();
+      }
+    };
+	this.mouseout = function (e) { if (tool.started) {tool.mouseup(e);}}
+  };
+
+
+
+var tool=new tools['pencil'];
+
+
+
+
+</script>
+
+<button onclick="copy()">Copy</button>
+
+</body>
+</html>
