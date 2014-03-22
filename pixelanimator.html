@@ -38,7 +38,7 @@ zoom:×<input type="number" value=5 id="zoominput" style="width:40px;">
 
 <br>
 
-<script src="/pixelanimator/jquery-1.11.0.min.js"></script>
+<script src="jquery-1.11.0.min.js"></script>
 <script>
 
 function btnspawn(){
@@ -264,7 +264,7 @@ currentframe++;
 		hova.data[currpos+2]=col.b;
 		hova.data[currpos+3]=255;*/
 		hova.putImageData(pix,Math.floor(lmx/zoomv)+spw*currentframe,Math.floor(lmy/zoomv));
-		
+		 
 		e2= 2*err;
 		if(e2 > -dy){ err = err - dy; lmx += sx}
         if(e2 < dx){ err = err + dx; lmy+= sy }
