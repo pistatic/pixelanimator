@@ -27,7 +27,7 @@ canvas{    image-rendering: optimizeSpeed;
 .dimmer{background: #000; position: fixed; opacity: .5;
     top:0; left:0; width:100%; height:100%; z-index:99; 
 	}
-.colorcube{width:25px;height:25px;border:2px solid black; background:red; transition:border 0.3s;}
+.colorcube{width:15px;height:15px;border:2px solid black; background:red; transition:border 0.3s;}
 .colorcube:hover{border:2px solid #FFAA00; }
 #colorswatch{width:60px;height:60px; margin:0px;}
 .blockmenubutton{width:30px;height:30px; display:inline-block; margin:1px; background:#FFFFFF; transition:background 0.5s;}
@@ -88,6 +88,7 @@ canvas{    image-rendering: optimizeSpeed;
 		<table id="colorgrid" style="position:absolute;top:0px;left:70px;margin:0; border:1px solid #222222;">
 		 <tr> <td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td> </tr>
 		 <tr> <td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td> </tr>
+		 <tr> <td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td> </tr>
 		</table>
 	</div>
 	<div class="toolpack tp4">
@@ -144,7 +145,8 @@ document.body.appendChild(btn);
 };
 
 var startColors=new Array({r:0,g:0,b:0},{r:255,g:255,b:255},{r:255,g:0,b:0},{r:0,g:255,b:0},{r:0,g:0,b:255},{r:125,g:0,b:125},
-						  {r:255,g:125,b:0},{r:255,g:255,b:0},{r:255,g:0,b:255},{r:0,g:255,b:255},{r:122,g:122,b:122},{r:0,g:125,b:0});
+						  {r:255,g:125,b:0},{r:255,g:255,b:0},{r:255,g:0,b:255},{r:0,g:255,b:255},{r:122,g:122,b:122},{r:0,g:125,b:0},
+						  {r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122} );
 
 
 function canvasresize(){
@@ -271,7 +273,10 @@ img.onload=function(){
 
   
   createnewwindow(50, 60, 12);
-  aw.realctx.drawImage(img, 0, 0 , img.width,img.height);
+  
+  
+  /*/ //aw.realctx.drawImage(img, 0, 0 , img.width,img.height);
+  
   //aw.realctx.translate(0.5, -0.5);
   /*aw.realctx.lineWidth=1;
   aw.realctx.beginPath();
