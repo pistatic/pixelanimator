@@ -58,19 +58,19 @@ canvas{    image-rendering: optimizeSpeed;
 <body style="background:lightgrey;">
 
     <div class="menuheader">
-	<p id="debugp" style="display:none">debug</p>
+	<p id="debugp" style="position:absolute; top:80px;left:10px">debug</p>
 	<div class="toolpack tp1">
 		<div class="blockmenubutton" onclick="toolpick('pencil')" ><img src="icons/block_pen.svg" title="Pencil" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="toolpick('rectselect')"><img src="icons/block_rectselect.svg" title="Select" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick="toolpick('free-select')"><img src="icons/block_freeselect.svg" title="Free-select" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="toolpick('fill')"><img src="icons/block_fill.svg" title="Fill" class="blockmenuface"></div>
-		<div class="blockmenubutton_ina"></div>
+		<div class="blockmenubutton" onclick="outline()"><img src="icons/block_fill.svg" title="Outline" class="blockmenuface"></div>
 		<br>
 		<div class="blockmenubutton_ina"></div>
-		<div class="blockmenubutton_ina"></div>
-		<div class="blockmenubutton_ina"></div>
-		<div class="blockmenubutton_ina"></div>
-		<div class="blockmenubutton_ina"></div>
+		<div class="blockmenubutton" onclick="addFrame()"><p style="color:black">+</p></div>
+		<div class="blockmenubutton" onclick="removeFrame()"><p style="color:black">-</p></div>
+		<div class="blockmenubutton" onclick="importHandler()"><p style="color:black">im</p></div>
+		<div class="blockmenubutton" onclick="exportHandler()"><p style="color:black">ex</p></div>
 	</div>
 	
 	<div class="toolpack tp2">
@@ -110,21 +110,27 @@ canvas{    image-rendering: optimizeSpeed;
 
 <div id="timelinediv" style="width:100%; height:auto; overflow:scroll; padding:0px; position:fixed; bottom:0; left:0;">
 	
-	
-	<div id="timelinepicker" style="position:absolute; border: 2px solid red; width:50px;height:60px; display:inline-block;">e</div>
+	<div id="timelinepicker" style="pointer-events:none; position:absolute; border: 2px solid red; width:50px;height:60px; display:inline-block;">e</div>
+	<div id="timelineonionmin" style="pointer-events:none; position:absolute; border: 2px solid yellow; width:50px;height:60px; display:inline-block; visibility:hidden;"><</div>
+	<div id="timelineonionmax" style="pointer-events:none; position:absolute; border: 2px solid yellow; width:50px;height:60px; display:inline-block; visibility:hidden;">></div>
 </div>
 <div id="viewsettingsdiv" style="width:100%; padding:0px; position:fixed; bottom:0; left:0; background:black; color:white;">
 <button onclick="animate()">Play</button>
 fps:<input type="number" value=30 min=1 id="fpsinput" style="width:40px;">
 zoom:×<input type="number" value=5 min=1 id="zoominput" style="width:40px;">
+&nbsp &nbsp || &nbsp &nbsp
+<button onclick="toggleOnion()" id="oniButton"> Oni(off)</button>
+wd:<input type="number" value=6 min=0 id="oniwidthinput" style="width:40px;">
++-<input type="number" value=0 id="onioffsetinput" style="width:40px;">
+
 </div>
 <br>
 
 
 <div id="fw_new">
 	New sheet <br>
-	spw <input type="number" value=50 min=1 id="fwv_spw" style="width:40px;"> <br>
-	sph <input type="number" value=60 min=1 id="fwv_sph" style="width:40px;"> <br>
+	spw <input type="number" value=70 min=1 id="fwv_spw" style="width:40px;"> <br>
+	sph <input type="number" value=70 min=1 id="fwv_sph" style="width:40px;"> <br>
 	count <input type="number" value=12 min=1 id="fwv_count" style="width:40px;"> <br>
 	<button onclick="createnewwindow(document.getElementById('fwv_spw').value,document.getElementById('fwv_sph').value,document.getElementById('fwv_count').value)">New</button> <button onclick="dimmer.click()">Cancel</button>
 </div>
@@ -132,6 +138,8 @@ zoom:×<input type="number" value=5 min=1 id="zoominput" style="width:40px;">
 <br>
 
 <br>
+
+
 
 <script src="gildas-zip/zip.js"></script> 
 <script>zip.workerScriptsPath="gildas-zip/"</script>
@@ -149,11 +157,39 @@ var startColors=new Array({r:0,g:0,b:0},{r:255,g:255,b:255},{r:255,g:0,b:0},{r:0
 						  {r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122} );
 
 
-function canvasresize(){
+function canvasresize( wid, hei){trace(wid);
 var resizebuff = aw.realctx.getImageData(0,0,aw.realc.width,aw.realc.height);
-aw.realc.height+=20;
+aw.realc.width=wid;
+aw.realc.height=hei;
+aw.spc = spc = Math.floor(wid/spw);
 aw.realctx.putImageData(resizebuff,0,0);		
 };
+
+function addFrame(){
+	var resizebuff1; var resizebuff2;
+	if(currentframe!=0)     resizebuff1 = aw.realctx.getImageData(0,0,aw.spw*currentframe,aw.realc.height);
+	if(currentframe<aw.spc) resizebuff2 = aw.realctx.getImageData(aw.spw*currentframe,0, aw.realc.width-aw.spw*currentframe ,aw.realc.height);
+	aw.realc.width=aw.realc.width+spw;
+	if(currentframe!=0)     aw.realctx.putImageData(resizebuff1,0,0);	
+	if(currentframe<aw.spc) aw.realctx.putImageData(resizebuff2,(currentframe+1)*aw.spw,0);	
+	setcurrentframe(currentframe);
+	aw.spc = spc = Math.floor(aw.realc.width/aw.spw);
+	}
+
+
+
+function removeFrame(){trace(aw.spc.toString()+" "+currentframe.toString())
+	var resizebuff1; var resizebuff2;
+	if(currentframe!=0)     resizebuff1 = aw.realctx.getImageData(0,0,aw.spw*currentframe,aw.realc.height);
+	if(currentframe<aw.spc-1) resizebuff2 = aw.realctx.getImageData(aw.spw*(currentframe+1),0, aw.realc.width-aw.spw*(currentframe+1) ,aw.realc.height);
+	aw.realc.width=aw.realc.width-spw;
+	if(currentframe!=0)     aw.realctx.putImageData(resizebuff1,0,0);	
+	if(currentframe<aw.spc-1) aw.realctx.putImageData(resizebuff2,currentframe*aw.spw,0);	
+	setcurrentframe(currentframe);
+	aw.spc = spc = Math.floor(aw.realc.width/aw.spw);
+}
+
+
 var undoDepth=50;
 var animrunning=false;
 
@@ -171,6 +207,9 @@ var sph=60;
 var spc=30; //spritecount
 var undobuff=new Array();
 var redobuff=new Array();
+var onion=false;
+var onimin=0;
+var onimax=0;
 
 var col={r:0,g:0,b:0};
 var selx=0; var sely=0;var selw=0; var selh=0;
@@ -178,20 +217,35 @@ var dimmer;
 //var tool="pencil";
 
 
+function setTimelinePicker(){ //set
+  var tlpicker=document.getElementById("timelinepicker");
+  var tlonimin=document.getElementById("timelineonionmin");
+  var tlonimax=document.getElementById("timelineonionmax");
+  
+  tlpicker.style.left=(currentframe*spw+5).toString()+"px"; 
+  tlpicker.innerHTML=currentframe; 
+   if(aw.onion){
+	tlonimin.style.left=((currentframe-aw.onimin)*spw+5).toString()+"px"; 
+	tlonimax.style.left=((currentframe+aw.onimax)*spw+5).toString()+"px"; 
+   }
+  }
 
-function setTimelinePicker(){
-var timelinepicker=document.getElementById("timelinepicker");
-timelinepicker.style.color="red";
-timelinepicker.style.width=(spw-10).toString()+"px";
-timelinepicker.style.height=(sph-10).toString()+"px";
-timelinepicker.style.top="5px";
-timelinepicker.style.left=(currentframe*spw+5).toString()+"px";
+function setupTimelinePicker(){ //setup
+  var tlpicker=document.getElementById("timelinepicker");
+  var tlonimin=document.getElementById("timelineonionmin");
+  var tlonimax=document.getElementById("timelineonionmax");
+  tlpicker.style.color="red";
+  tlpicker.style.width = tlonimin.style.width = tlonimax.style.width = (spw-10).toString()+"px";
+  tlpicker.style.height = tlonimin.style.height = tlonimax.style.height = (sph-10).toString()+"px";
+  tlpicker.style.top  = tlonimin.style.top = tlonimax.style.top = "5px";
 
-viewsettingsdiv.style.bottom=(sph+25).toString() +"px"; 
+  setTimelinePicker();
+
+  viewsettingsdiv.style.bottom=(sph+25).toString() +"px"; 
 }
 
 
-setTimelinePicker();
+setupTimelinePicker();
 var dback=document.getElementById("drawback");
 var overc=document.getElementById("drawoverlay");
 var onionc=document.getElementById("onioncanvas");
@@ -350,6 +404,9 @@ function createnewwindow(width,height,count){
 	currentframe:0,
 	zoomv:4,
 	fpsv:30,
+	onion:false,
+	onimin:0,
+	onimax:0,
 	undobuff:new Array(),
 	redobuff:new Array(),
 	setAsActive:new Function()
@@ -357,7 +414,7 @@ function createnewwindow(width,height,count){
 	rec.drawctx=rec.drawc.getContext('2d');
 	rec.realctx=rec.realc.getContext('2d');
 	rec.realc.width=rec.spw*rec.spc;  rec.realc.height=rec.sph; 
-	rec.realc.addEventListener('click',framepick , false);
+	rec.realc.addEventListener('mousedown',framepick , false);
 	
 	windowList.push(rec);
 	
@@ -398,6 +455,7 @@ function createnewwindow(width,height,count){
 	currentframe=rec.currentframe;
 	zoomv=rec.zoomv;
 	fpsv=rec.fpsv;
+	//onion=rec.onion; onimin=rec.onimin; onimax=rec.onimax;
 	undobuff=rec.undobuff;
 	redobuff=rec.redobuff;
 	
@@ -406,7 +464,7 @@ function createnewwindow(width,height,count){
 	 
 	 document.getElementById('zoominput').value=zoomv;
 	 setzoom(zoomv);
-	 setTimelinePicker();
+	 setupTimelinePicker();
 	setcurrentframe(currentframe);
 	
 	 }
@@ -423,27 +481,45 @@ function createnewwindow(width,height,count){
 
 
 
-function framepick(){if(!animrunning){ commitTemp();
+function framepick(e){if(!animrunning){ commitTemp(); trace("tmln"+e.button.toString());
  mouseX=(event.pageX - $(document).scrollLeft() - $(aw.realc).offset().left);
-currentframe=Math.floor(mouseX/spw);
+ var framenum=Math.floor(mouseX/spw);
+ if(e.button==0){ currentframe=framenum }
+ if(e.button==2 && aw.onion){if(framenum<currentframe) aw.onimin=currentframe-framenum;
+						else if(framenum>currentframe) aw.onimax=framenum-currentframe;}
 setcurrentframe(currentframe);
+trace(framenum)
 }}
 
 function setcurrentframe(currentframe)
 {
   ctx.clearRect(0,0,spw*zoomv,sph*zoomv);
   ctx.drawImage(aw.realc, spw*currentframe, 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);
-  timelinepicker.style.left=(currentframe*spw+5).toString()+"px"; 
-  timelinepicker.innerHTML=currentframe;
-  if(!animrunning)setonion();
+  setTimelinePicker();
+  if(!animrunning && aw.onion)setonion();
   aw.currentframe=currentframe;
 }
-function setonion(){if(false){
+function clearonion(){
   onionctx.clearRect(0,0,spw*zoomv,sph*zoomv);
+}
+function setonion(){
+  clearonion();
+  if(aw.onion){
   onionctx.globalAlpha = 0.2;
-  onionctx.drawImage(aw.realc, spw*(currentframe-1), 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);
-  onionctx.drawImage(aw.realc, spw*(currentframe+1), 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);
-}}
+  onionctx.drawImage(aw.realc, spw*(currentframe-aw.onimin), 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);
+  onionctx.drawImage(aw.realc, spw*(currentframe+aw.onimax), 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);
+  }
+}
+
+function toggleOnion(){
+  aw.onion=!aw.onion;
+  var tlonimin=document.getElementById("timelineonionmin");
+  var tlonimax=document.getElementById("timelineonionmax");
+  if(aw.onion){tlonimin.style.visibility = tlonimax.style.visibility = "visible";}
+  else{tlonimin.style.visibility = tlonimax.style.visibility = "hidden";}
+  setcurrentframe(currentframe);
+  setonion();
+}
 
 function applytemp()
 {
@@ -473,17 +549,21 @@ overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
 
 
 	//requestinterval csak 60fps-nél kellene
+	var timer;
 function animate()
-{if(!animrunning){currentframe=0;animrunning=true;
+{
+if(!animrunning){currentframe=0;animrunning=true;
+	clearonion();
    //TIMER
 
-var  timer = setInterval(function() {
-  //elem.style.left = ( left += 10 ) + "px";
-  setcurrentframe(currentframe);
-currentframe++;
-  if ( currentframe>aw.spc ) {clearInterval( timer ); animrunning=false; currentframe=0; ctx.drawImage(aw.realc, spw*currentframe, 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);}
-}, 1000/fpsv);
-}
+   timer = setInterval(function() {
+   //elem.style.left = ( left += 10 ) + "px";
+   setcurrentframe(currentframe);
+   currentframe++;
+   if ( currentframe>aw.spc ) {clearInterval( timer ); animrunning=false; currentframe=0; ctx.drawImage(aw.realc, spw*currentframe, 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);}
+   }, 1000/fpsv);
+ }else /*if animrunning*/
+   {clearInterval( timer ); animrunning=false; setcurrentframe(currentframe);}
 };
 
 
@@ -524,10 +604,16 @@ function drawheaderdragend(e){
 
 
     drawoverlay.addEventListener('mousedown', drawevent, false);
+	drawoverlay.addEventListener('touchstart', drawevent, false);
     window.addEventListener('mousemove', drawevent, false);
-    window.addEventListener('mouseup',   drawevent, false);
+	window.addEventListener('touchmove', drawevent, false);
+	window.addEventListener('mouseup', drawevent, false);
+    window.addEventListener('touchend',   drawevent, false);
 	drawoverlay.addEventListener('mouseout',   drawevent, false);
+	drawoverlay.addEventListener('touchleave',   drawevent, false);
+	
 	/*window*/drawoverlay.addEventListener('contextmenu', rightclickmenu  , false);
+	document.getElementById("timelinediv").addEventListener('contextmenu', rightclickmenu  , false);
 	
 	function rightclickmenu(e){e.preventDefault(); return false;}
 	
@@ -730,13 +816,14 @@ function setCol(pic,px,py,col){
 	this.drawbuff =null;
 
 
-    this.mousedown = function (e) {
+    function drawstart (e) { e.preventDefault(); /*prevent touchscreen autoscroll*/
 	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
 	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
        // aw.realctx.beginPath();
         //aw.realctx.moveTo(mouseX,mouseY);
         tool.started = true;
 		tool.tracknum = 0;
+		overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
 		//tool.drawbuff = aw.realctx.getImageData( 50*currentframe, 0,  spw,sph);
 		
 		tempctx.clearRect(0,0,spw,sph);	
@@ -745,11 +832,16 @@ function setCol(pic,px,py,col){
 		
 		//alert(mouseY+" "+mouseX)
     };
+	this.touchstart = drawstart;
+	this.mousedown = drawstart; 
 
 
-    this.mousemove = function (e) {
+    function drawmove (e) {  e.preventDefault(); 
 	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
 	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
+	
+
+	
       if (tool.started) {
       //  aw.realctx.lineTo(mouseX, mouseY);
        // aw.realctx.stroke();
@@ -776,9 +868,20 @@ function setCol(pic,px,py,col){
 		lastmY=mouseY;
 
       }
+	  else /*no toolstarted*/
+	  {		overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
+			overctx.beginPath();
+			overctx.setLineDash([0]);
+			selx=Math.floor(mouseX/zoomv);
+			sely=Math.floor(mouseY/zoomv);
+			overctx.rect(selx*zoomv,  sely*zoomv,  zoomv,  zoomv);
+			overctx.stroke();
+	  }
     };
+	this.touchmove = drawmove;
+	this.mousemove = drawmove;
 
-    this.mouseup = function (e) {
+    function drawend (e) {  e.preventDefault(); 
 	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
 	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
       if (tool.started) {
@@ -791,6 +894,8 @@ function setCol(pic,px,py,col){
         tool.started = false;
       }
     };
+	this.touchend = drawend;
+	this.mouseup = drawend;
 	//this.mouseout = function (e) { if (tool.started) {tool.mouseup(e);}}
   };
 
@@ -912,6 +1017,30 @@ tools.fill = function () {
   
 var tool=new tools['pencil'];
 
+
+
+function outline(){
+	tempctx.clearRect(0,0,spw,sph);	
+	var samplebuff = aw.realctx.getImageData( spw*currentframe, 0,  spw,sph);
+	var drawbuff = aw.realctx.getImageData( spw*currentframe, 0,  spw,sph);
+
+	for(var i=0; i<drawbuff.data.length/4; i++)
+	{if(drawbuff.data[i*4+3]==0 && 
+	    ((samplebuff.data[i*4-4+3]!=0 && i%spw>0)
+	  || (samplebuff.data[i*4+4+3]!=0 && i%spw<spw-1)
+	  || (samplebuff.data[(i*4)-(spw*4)+3]!=0 && i>spw) 
+	  || (samplebuff.data[(i*4)+(spw*4)+3]!=0 && i<drawbuff.data.length/4-spw)  
+	  //stick-brawler specials:
+	  || (samplebuff.data[i*4+8+3]!=0 && i%spw<spw-2)
+	  || (samplebuff.data[(i*4)-(spw*8)+3]!=0 && i>spw*2) 
+	  || (samplebuff.data[(i*4)-(spw*4)+4 +3]!=0 && i>spw && i%spw<spw-1)
+	  ) 
+	  ) drawbuff.data[i*4+3]=255;}
+	
+	tempctx.putImageData(drawbuff,0,0);
+	commitTemp();
+	setcurrentframe(currentframe);
+}
 
 
 
@@ -1037,7 +1166,7 @@ function savestart(e) {
 function openHandler() {alert("open");}
 
 
-function keyPress(e) {
+function keyPress(e) { e.preventDefault(); e.stopPropagation();
       var evtobj = window.event? event : e
       if (evtobj.keyCode == 90 && evtobj.ctrlKey) undoHandler(); //ctrl z
 	  if (evtobj.keyCode == 32 && evtobj.ctrlKey) undoHandler(); //ctrl space	  
@@ -1053,14 +1182,15 @@ function keyPress(e) {
 
 }
 
-document.onkeydown = keyPress;
+window.onkeydown = keyPress;
 
-//disabling auto ctrl s/o  -disabling at keyDOWN
-document.addEventListener("keydown", function(e) {
-  if ( ((e.keyCode == 79)||(e.keyCode == 83)) && e.ctrlKey ) { e.preventDefault(); }
+//disabling auto ctrl s/o  -disabling at keyDOWN  + disabling every other browser-shortcuts like refresh, close etc. 
+window.addEventListener("keydown", function(e) {
+  //if ( /*((e.keyCode == 79)||(e.keyCode == 83)) &&*/ /*e.ctrlKey*/ true ) {
+  e.preventDefault(); e.stopPropagation(); return false;// }
 	}, false);
 
-
+window.addEventListener("keyup", function(e) {e.preventDefault();e.stopPropagation();},false);
 	
 	
 
@@ -1151,14 +1281,14 @@ if (!window.Clipboard) {
     
    // We can hide the element and append it to the body,
    pasteCatcher.style.opacity = 0;
-   document.body.appendChild(pasteCatcher);
+   //!!!!!!!document.body.appendChild(pasteCatcher);
  
    // as long as we make sure it is always in focus
    pasteCatcher.focus();
    document.addEventListener("click", function() { pasteCatcher.focus(); });
 } 
 // Add the paste event listener
-/*event*/ //window.addEventListener("paste", pasteHandler);
+/*event*/ window.addEventListener("paste", pasteHandler);
  
 /* Handle paste events */
 function pasteHandler(e) {
@@ -1166,7 +1296,7 @@ function pasteHandler(e) {
    if (e.clipboardData) {
       // Get the items from the clipboard
       var items = e.clipboardData.items;
-      if (items) {alert(items[0].type);
+      if (items) { //alert(items[0].type);
          // Loop through all items, looking for any kind of image
          for (var i = 0; i < items.length; i++) {
             if (items[i].type.indexOf("image") !== -1) {
