@@ -29,8 +29,11 @@ canvas{    image-rendering: optimizeSpeed;
 .dimmer{background: #000; position: fixed; opacity: .5;
     top:0; left:0; width:100%; height:100%; z-index:99; 
 	}
-.colorcube{width:15px;height:15px;border:2px solid black; background:red; transition:border 0.3s;}
-.colorcube:hover{border:2px solid #FFAA00; }
+.colorcube{width:17px;height:17px;border:2px solid black;    background:red; transition:border 0.3s; padding:0px; vertical-align:bottom; }
+.colorcube2{width:17px;height:17px;border:2px solid #222222; background:red; transition:border 0.3s; padding:0px;  vertical-align:bottom; }
+.colorcube:hover, .colorcube2:hover , .colorcube_act, .colorcube2_act  {border:2px solid #FFAA00; padding:0px; width:17px;height:17px; vertical-align:bottom;}
+.colorcube_alt{width:100%; height:30%; bottom:0px; }
+
 #colorswatch{width:60px;height:60px; margin:0px;}
 .blockmenubutton{width:30px;height:30px; display:inline-block; margin:1px; background:#FFFFFF; transition:background 0.5s;}
 .blockmenubutton_ina{width:30px;height:30px; display:inline-block; margin:1px; background:#888888;}
@@ -54,6 +57,9 @@ canvas{    image-rendering: optimizeSpeed;
 	opacity:1; transition:opacity 1s;
 	}
 .bindsquare{background:#FFAA00;  position:absolute; width:15px;  height:15px; top:5px; right:5px; cursor:default;}
+.helpbutton{background:#995500; position:absolute; left:10px;top:5px; border:none; font-weight:bold; height:20px; width:50px; transition:background 0.5s;}
+.settingsbutton{background:#555555; position:absolute; left:10px;top:30px; border:none; font-weight:bold; height:20px; width:50px;}
+.helpbutton:hover{background:#FEC80D;}
 	</style>
 	
 	
@@ -67,12 +73,12 @@ canvas{    image-rendering: optimizeSpeed;
 		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_eraser.svg" title="Eraser" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="toolpick('rectselect')">			<img src="icons/block_rectselect.svg" title="Select" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="toolpick('fill')">				<img src="icons/block_fill.svg" title="Fill" class="blockmenuface"></div>
-		<div class="blockmenubutton_ina" onclick=";">							<img src="icons/block_fillcont.svg" title="Outline Fill" class="blockmenuface"></div>
+		<div class="blockmenubutton" onclick="toolpick('outlinefill');">		<img src="icons/block_fillcont.svg" title="Outline Fill" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="outline()">						<img src="icons/block_contour.svg" title="Outline" class="blockmenuface"></div>
 		<br>
 		
 		<div class="blockmenubutton_ina" onclick=";">							<img src="icons/block_colorpicker.svg" title="Pick Color" class="blockmenuface"></div>
-		<div class="blockmenubutton_ina" onclick=";">							<img src="icons/block_shade.svg" title="Shading Tool" class="blockmenuface"></div>
+		<div class="blockmenubutton" onclick="toolpick('shading');">		<img src="icons/block_shade.svg" title="Shading Tool" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick="toolpick('free-select')">		<img src="icons/block_freeselect.svg" title="Free-select" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick=";">							<img src="icons/block_line.svg" title="Line Tool" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick=";">							<img src="icons/block_rect.svg" title="Rectangle Tool" class="blockmenuface"></div>
@@ -124,15 +130,24 @@ canvas{    image-rendering: optimizeSpeed;
 	
 	
 	<div class="toolpack tp4">
-		<input  type="color" id="colorswatch" onchange="colorpick(this.value)">
-		<table id="colorgrid" style="position:absolute;top:0px;left:70px;margin:0; border:1px solid #222222;">
-		 <tr> <td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td> </tr>
-		 <tr> <td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td> </tr>
-		 <tr> <td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td><td class="colorcube"></td> </tr>
+		<input  type="color" id="colorswatch" onchange="colorpickchange({m:{r:hexToR(this.value),g:hexToG(this.value),b:hexToB(this.value)}})">
+		<table id="colorgrid" style="position:absolute;top:0px;left:70px;margin:0; border:1px solid #222222;border-collapse: separate;border-spacing: 0px;">
+		 <tr> 
+			<td rowspan="3"> 
+							<img width=20px; height=20px; id="colorlockbutton" src="icons/mini_lockopen.svg" title="Lock Colors"  
+							
+							onclick="if(colorslocked){colorslocked=false;
+						this.src='icons/mini_lockopen.svg'}else{colorslocked=true;this.src='icons/mini_lockclosed.svg'}"
+						</td> 
+		</tr>
+		 <tr> </tr>
+		 <tr> </tr>
 		</table>
 	</div>
 	<div class="toolpack tp5">
 		<img src="icons/pixan.svg">
+		<input class="helpbutton "type="button" value="HELP" onclick="window.open('pixanhelp.html');">
+		<input class="settingsbutton "type="button" value="CONF" onclick=";">
 	</div>
 	
 	<select style="display:none" onchange="pencilpick(this.value)" id="pencilselect">
@@ -204,9 +219,14 @@ var btn=document.createElement("BUTTON");
 document.body.appendChild(btn);
 };
 
-var startColors=new Array({r:0,g:0,b:0},{r:255,g:255,b:255},{r:255,g:0,b:0},{r:0,g:255,b:0},{r:0,g:0,b:255},{r:125,g:0,b:125},
-						  {r:255,g:125,b:0},{r:255,g:255,b:0},{r:255,g:0,b:255},{r:0,g:255,b:255},{r:122,g:122,b:122},{r:0,g:125,b:0},
-						  {r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122},{r:122,g:122,b:122} );
+var colorslocked=false;
+var currentColorIndex=0;
+var junkColorIndex=-1;
+var colorList=new Array(  {m:{r:0,g:0,b:0}, a:null},		{m:{r:255,g:255,b:255},a:null},		{m:{r:255,g:0,b:0}, a:{r:200,g:0,b:0}},		{m:{r:0,g:255,b:0}, a:{r:0,g:200,b:0}},		{m:{r:0,g:0,b:255}, a:{r:0,g:0,b:200}},		{m:{r:125,g:0,b:125}, a:{r:100,g:0,b:100}},
+						  {m:{r:255,g:125,b:0}, a:null},	{m:{r:255,g:255,b:0},a:null},		{m:{r:255,g:0,b:255}, a:null},				{m:{r:0,g:255,b:255}, a:null},				{m:{r:125,g:125,b:125}, a:null},				{m:{r:0,g:125,b:0}, a:null}  ,
+						  
+						  {m:{r:125,g:125,b:125}, a:null},  {m:{r:125,g:125,b:125}, a:null},	{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null} );
+						 
 
 
 function canvasresize( wid, hei){trace(wid);
@@ -773,17 +793,50 @@ function hexToG(h) {return parseInt((cutHex(h)).substring(2,4),16)}
 function hexToB(h) {return parseInt((cutHex(h)).substring(4,6),16)}
 function cutHex(h) {return (h.charAt(0)=="#") ? h.substring(1,7):h}
 function colorpick (e) {
-  col.r=hexToR(e);
-  col.g=hexToG(e);
-  col.b=hexToB(e);
+  col.r=e.m.r//hexToR(e);
+  col.g=e.m.g//hexToG(e);
+  col.b=e.m.b//hexToB(e);
   pencilpick(document.getElementById("pencilselect").value);
-  document.getElementById("colorswatch").value=e;
+  document.getElementById("colorswatch").value=rgbToHex(col.r, col.g, col.b);
   }
+function colorpickchange(e){
+	/*--kell--search for color*/
+  if(!colorslocked){ 
+	colorList[currentColorIndex].m={r:e.m.r, g:e.m.g, b:e.m.b}; 
+	colorgrid.rows[Math.floor(currentColorIndex/6)].cells[currentColorIndex%6].style.background=rgbToHex(e.m.r,e.m.g,e.m.b);
+	colorpick (e);
+	}
+  else{ 
+	
+	if(!matchCol({r:e.m.r, g:e.m.g, b:e.m.b},colorList[12+(junkColorIndex+6)%6].m)) junkColorIndex++; 
+	tempColorIndex=12+junkColorIndex%6; 
+	colorList[tempColorIndex].m={r:e.m.r, g:e.m.g, b:e.m.b}; 
+	colorgrid.rows[Math.floor(tempColorIndex/6)].cells[tempColorIndex%6].style.background=rgbToHex(e.m.r,e.m.g,e.m.b);
+	colorGridPick(tempColorIndex);
+  }
+}
+
+function colorpickaltchange(e){
+	/*--kell--search for color*/
+  if(!colorslocked){ 
+	colorList[currentColorIndex].a={r:e.m.r, g:e.m.g, b:e.m.b}; 
+	colorgrid.rows[Math.floor(currentColorIndex/6)].cells[currentColorIndex%6].innerHTML="<div class='colorcube_alt' style='background:"+rgbToHex(e.m.r, e.m.g, e.m.b)+"'></div>";
+	colorpick (e);
+	}
+  /*else{ 
+	
+	if(!matchCol({r:e.m.r, g:e.m.g, b:e.m.b},colorList[12+(junkColorIndex+6)%6].m)) junkColorIndex++; 
+	tempColorIndex=12+junkColorIndex%6; 
+	colorList[tempColorIndex].m={r:e.m.r, g:e.m.g, b:e.m.b}; 
+	colorgrid.rows[Math.floor(tempColorIndex/6)].cells[tempColorIndex%6].style.background=rgbToHex(e.m.r,e.m.g,e.m.b);
+	colorGridPick(tempColorIndex);
+  }*/
+}
 
   
-  
-  
-var colorgrid = document.getElementById("colorgrid");
+
+  /*
+
 for(var i=0; i<colorgrid.rows.length;i++){
 for(var j=0; j<colorgrid.rows[i].cells.length;j++){
 
@@ -791,9 +844,27 @@ for(var j=0; j<colorgrid.rows[i].cells.length;j++){
 		colorgrid.rows[i].cells[j].style.background=rgbToHex(setcol.r,setcol.g,setcol.b);
 		colorgrid.rows[i].cells[j].value=rgbToHex(setcol.r,setcol.g,setcol.b);
 	colorgrid.rows[i].cells[j].onclick= function(){colorGridPick(this.value);};
-}}
+}}  */
+  var colorgrid = document.getElementById("colorgrid");
 
-function colorGridPick(e){colorpick(e);}
+  for(var i=0; i<18; i++){
+    var setcol=colorList[i]; 
+	var newcell = colorgrid.rows[Math.floor(i/6)].insertCell(i%6);
+	if(i<12) newcell.className="colorcube";
+	else     newcell.className="colorcube2";
+	newcell.style.background=rgbToHex(setcol.m.r,setcol.m.g,setcol.m.b);
+	//newcell.value=rgbToHex(setcol.m.r,setcol.m.g,setcol.m.b);
+	if(setcol.a!=null)newcell.innerHTML="<div class='colorcube_alt' style='background:"+rgbToHex(setcol.a.r,setcol.a.g,setcol.a.b)+"'></div>";
+	newcell.target=i;
+	newcell.onclick= function(){colorGridPick(this.target);};
+  }
+
+
+function colorGridPick(e){
+	colorpick(colorList[e]);
+	colorgrid.rows[Math.floor(currentColorIndex/6)].cells[currentColorIndex%6].className = currentColorIndex<12 ? "colorcube" : "colorcube2";
+	colorgrid.rows[Math.floor(e/6)].cells[e%6].className= "colorcube_act" ;
+	currentColorIndex=e;}
   
   
   
@@ -849,7 +920,7 @@ function setCol32(pic,px,py,col){
    end loop
    */
 //currpos=(Math.floor(mouseY/zoomv)*spw+Math.floor(mouseX/zoomv))*4;
-  function drawdataline(hova,lmx,lmy,mx,my){ //kimásolja a frame-t, datát módosít, visszamásol 
+  function drawdataline(hova,pixcol,lmx,lmy,mx,my){ //kimásolja a frame-t, datát módosít, visszamásol 
 	dx = Math.abs(mx-lmx);
 	dy = Math.abs(my-lmy);
 	sx = lmx < mx ?  1 : -1;
@@ -857,9 +928,9 @@ function setCol32(pic,px,py,col){
 	err = dx-dy;
    
 	do{ currpos=(Math.floor(lmy/zoomv)*spw+Math.floor(lmx/zoomv))*4;
-  		hova.data[currpos  ]=col.r;
-		hova.data[currpos+1]=col.g;
-		hova.data[currpos+2]=col.b;
+  		hova.data[currpos  ]=pixcol.r;
+		hova.data[currpos+1]=pixcol.g;
+		hova.data[currpos+2]=pixcol.b;
 		hova.data[currpos+3]=255;
 		
 		e2= 2*err;
@@ -959,7 +1030,24 @@ function setCol32(pic,px,py,col){
 		}while(stax.length>0)
 	return;
   }
-
+  function floodFilldouble(base,temp,px,py,mit,mit2,mire){ 
+	var pos=(px+py*spw)*4;
+	var stax=new Array();
+	if(matchCol(mit,mire))return;
+	var node={x:px,y:py};
+	stax.push(node);
+	do{
+		node=stax.pop();
+		if(matchCol(getCol(base,node.x,node.y),mit)||matchCol(getCol(base,node.x,node.y),mit2)){
+				setCol32(base,node.x,node.y,mire); if(temp!=null) setCol32(temp,node.x,node.y,colWhite); 
+				stax.push({x:node.x+1,y:node.y});
+				stax.push({x:node.x-1,y:node.y});
+				stax.push({x:node.x,y:node.y+1});
+				stax.push({x:node.x,y:node.y-1}); 
+			}
+		}while(stax.length>0)
+	return;
+  }
   
   
 
@@ -1000,7 +1088,7 @@ function setCol32(pic,px,py,col){
 	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
 	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
 	
-trace(e.button)
+
 	
       if (tool.started && !tool.alternative) {
       //  aw.realctx.lineTo(mouseX, mouseY);
@@ -1039,7 +1127,9 @@ trace(e.button)
 	  }
 	  if(tool.started && tool.alternative){
 				var p = aw.realctx.getImageData(Math.floor(mouseX/zoomv)+spw*currentframe, Math.floor(mouseY/zoomv), 1, 1).data; 
-				colorpick(rgbToHex(p[0],p[1],p[2]));}
+				//colorpick(rgbToHex(p[0],p[1],p[2]));  
+				if(e.button!=2)colorpickchange({m:{r:p[0],g:p[1],b:p[2]}});
+							   colorpickaltchange({m:{r:p[0],g:p[1],b:p[2]}});  }
     };
 	this.touchmove = drawmove;
 	this.mousemove = drawmove;
@@ -1252,7 +1342,7 @@ tools.fill = function () {
 		
 		else{
 		var colalph={r:col.r, g:col.g, b:col.b, a:255};
-		floodFill(tool.drawbuff,null, Math.floor(mouseX/zoomv),Math.floor(mouseY/zoomv),startCol,colalph);
+		floodFill(tool.drawbuff,null, Math.floor(mouseX/zoomv),Math.floor(mouseY/zoomv),startCol,colalph); 
 		tempctx.putImageData(tool.drawbuff,0,0);
 		commitTemp();
 		
@@ -1267,6 +1357,169 @@ tools.fill = function () {
     this.mouseup = function (e) {;};
 	
  };
+ 
+tools.outlinefill = function () { //bug:not working on white
+    var tool = this;
+	this.drawbuff =null;
+	var drawbuff2=null;
+
+    this.mousedown = function (e) {
+	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
+	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
+		tempctx.clearRect(0,0,spw,sph);
+		tool.drawbuff = aw.realctx.getImageData( spw*currentframe, 0,  spw,sph);
+		var startCol=getCol(tool.drawbuff, Math.floor(mouseX/zoomv), Math.floor(mouseY/zoomv)); var startCol2=null;
+		for(var i=0;i<colorList.length;i++)
+		 if(colorList[i].a!=null) { if( matchCol(startCol,colorList[i].m)) {startCol2=colorList[i].a; break;} 
+							   else if( matchCol(startCol,colorList[i].a)) {startCol2=colorList[i].m; break;}   }
+		
+		var colalph={r:255,g:255,b:255,a:255};//{r:col.r, g:col.g, b:col.b, a:255};
+		 drawbuff2= aw.realctx.createImageData(spw,sph);
+		 if(startCol2==null)
+		 floodFill(tool.drawbuff, drawbuff2, Math.floor(mouseX/zoomv),Math.floor(mouseY/zoomv),startCol,colalph);
+		 else
+		floodFilldouble(tool.drawbuff, drawbuff2, Math.floor(mouseX/zoomv),Math.floor(mouseY/zoomv),startCol,startCol2,colalph);
+	
+	/*outline part*/
+	tool.drawbuff= aw.realctx.createImageData(spw,sph);
+	if(e.button==2){//inward outline
+		for(var i=0; i<tool.drawbuff.data.length/4; i++)
+		{if(drawbuff2.data[i*4+3]!=0 && 
+			((drawbuff2.data[i*4-4+3]==0 && i%spw>0)
+		|| (drawbuff2.data[i*4+4+3]==0 && i%spw<spw-1)
+		|| (drawbuff2.data[(i*4)-(spw*4)+3]==0 && i>spw) 
+		|| (drawbuff2.data[(i*4)+(spw*4)+3]==0 && i<tool.drawbuff.data.length/4-spw)  
+		) 
+		) tool.drawbuff.data[i*4+3]=255;}
+	}
+	else{ //outline
+		for(var i=0; i<tool.drawbuff.data.length/4; i++)
+		{if(drawbuff2.data[i*4+3]==0 && 
+			((drawbuff2.data[i*4-4+3]!=0 && i%spw>0)
+		|| (drawbuff2.data[i*4+4+3]!=0 && i%spw<spw-1)
+		|| (drawbuff2.data[(i*4)-(spw*4)+3]!=0 && i>spw) 
+		|| (drawbuff2.data[(i*4)+(spw*4)+3]!=0 && i<tool.drawbuff.data.length/4-spw)  
+		) 
+		) tool.drawbuff.data[i*4+3]=255;}
+	}
+	tempctx.putImageData(tool.drawbuff,0,0);
+	commitTemp();
+	setcurrentframe(currentframe);
+    };
+
+    this.mousemove = function (e) {;};
+    this.mouseup = function (e) {;};
+
+ };
+  
+  
+  
+tools.shading = function () {
+    var tool = this;
+    this.started = false;
+	this.drawbuff =null;
+	var shadeCol=null;
+	var shadepixel = tempctx.createImageData(1,1);
+
+    function drawstart (e) { 
+	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
+	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
+
+	
+	tool.drawbuff = aw.realctx.getImageData( spw*currentframe, 0,  spw,sph);
+	var startCol=getCol(tool.drawbuff, Math.floor(mouseX/zoomv), Math.floor(mouseY/zoomv));
+	var i;
+	for( i=0;i<colorList.length;i++)
+		{if(colorList[i].a!=null && ( matchCol(startCol,colorList[i].m) || matchCol(startCol,colorList[i].a) )) {break;}      
+		}
+	
+		if(i<18){
+         tool.started = true;
+		 if(e.button==2) shadeCol=colorList[i].m;
+		 else			 shadeCol=colorList[i].a;
+		 shadepixel.data[0]=shadeCol.r;  shadepixel.data[1]=shadeCol.g;  shadepixel.data[2]=shadeCol.b;  shadepixel.data[3]=255; 
+		 dumpc.w=aw.spw; dumpc.h=aw.sph; dumpctx.clearRect(0,0,spw,sph);
+
+		 for(var p=0;p<tool.drawbuff.data.length/4;p++)
+			{if(!matchCol({r:tool.drawbuff.data[p*4],g:tool.drawbuff.data[p*4+1],b:tool.drawbuff.data[p*4+2]},colorList[i].m) && 
+			!matchCol({r:tool.drawbuff.data[p*4],g:tool.drawbuff.data[p*4+1],b:tool.drawbuff.data[p*4+2]},colorList[i].a) )
+			   {tool.drawbuff.data[p*4]=0;tool.drawbuff.data[p*4+1]=0;tool.drawbuff.data[p*4+2]=0;tool.drawbuff.data[p*4+3]=0;}}
+		 
+		 overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
+		 tempctx.clearRect(0,0,spw,sph);
+		 tempctx.putImageData(tool.drawbuff,0,0);
+		}
+		//tool.drawbuff = aw.realctx.getImageData( 50*currentframe, 0,  spw,sph);
+		
+		//tempctx.clearRect(0,0,spw,sph);	
+		lastmX=mouseX;
+		lastmY=mouseY;
+    };
+	this.touchstart = drawstart;
+	this.mousedown = drawstart; 
+
+
+    function drawmove (e) {  
+	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
+	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
+	
+
+	
+      if (tool.started ) {
+	 
+		drawdataline2(dumpctx,shadepixel,lastmX,lastmY,mouseX,mouseY);
+	  
+
+		//trace(e.button);
+		
+	//document.getElementById("debugp").innerHTML=mouseX.toString();
+	//	aw.realctx.putImageData(tool.drawbuff,50*currentframe, 0,Math.min(lastmX,mouseX)/zoomv,Math.min(lastmY,mouseY)/zoomv,Math.abs(lastmX-mouseX)/zoomv,Math.abs(lastmY-mouseY)/zoomv);	//alert(Math.min(lastmY,mouseY)-1)
+		//kell aw.realctx.putImageData(tool.drawbuff,50*currentframe, 0);	
+		//  tempctx.globalCompositeOperation="source-atop";
+		  //tempctx.putImageData(tool.drawbuff,0,0);
+		  tempctx.globalCompositeOperation="source-atop";
+		    tempctx.drawImage(dumpc, 0, 0);
+		  tempctx.globalCompositeOperation="source-over";
+		 applytemp();
+		 
+		 //setcurrentframe(currentframe);
+		lastmX=mouseX;
+		lastmY=mouseY;
+
+      }
+	  else /*no toolstarted*/
+	  {		overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
+			overctx.beginPath();
+			overctx.setLineDash([0]);
+			selx=Math.floor(mouseX/zoomv);
+			sely=Math.floor(mouseY/zoomv);
+			overctx.rect(selx*zoomv,  sely*zoomv,  zoomv,  zoomv);
+			overctx.stroke();
+	  }
+    };
+	this.touchmove = drawmove;
+	this.mousemove = drawmove;
+
+    function drawend (e) {//  e.preventDefault(); 
+	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
+	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
+      if (tool.started) {
+        tool.mousemove(e);
+		
+			    aw.realctx.globalCompositeOperation="source-atop";
+			  
+			commitTemp();
+			aw.realctx.globalCompositeOperation="source-over";
+		
+
+        tool.started = false;
+      }
+    };
+	this.touchend = drawend;
+	this.mouseup = drawend;
+	//this.mouseout = function (e) { if (tool.started) {tool.mouseup(e);}}
+};
+  
   
   
 var tool=new tools['pencil'];
@@ -1285,9 +1538,9 @@ function outline(){
 	  || (samplebuff.data[(i*4)-(spw*4)+3]!=0 && i>spw) 
 	  || (samplebuff.data[(i*4)+(spw*4)+3]!=0 && i<drawbuff.data.length/4-spw)  
 	  //stick-brawler specials:
-	  || (samplebuff.data[i*4+8+3]!=0 && i%spw<spw-2)
-	  || (samplebuff.data[(i*4)-(spw*8)+3]!=0 && i>spw*2) 
-	  || (samplebuff.data[(i*4)-(spw*4)+4 +3]!=0 && i>spw && i%spw<spw-1)
+	  //|| (samplebuff.data[i*4+8+3]!=0 && i%spw<spw-2)
+	  //|| (samplebuff.data[(i*4)-(spw*8)+3]!=0 && i>spw*2) 
+	  //|| (samplebuff.data[(i*4)-(spw*4)+4 +3]!=0 && i>spw && i%spw<spw-1)
 	  ) 
 	  ) drawbuff.data[i*4+3]=255;}
 	

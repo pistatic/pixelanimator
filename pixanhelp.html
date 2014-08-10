@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head><title>PixelAnimator Help</title></head>
+<link rel="shortcut icon" type="image/ico" href="favicon.ico" /> 
+<style>
+
+.blockdiv{width:760px;  margin-left: auto; margin-right: auto;  margin-top:50px; border: 2px solid black; padding:20px;}
+table{width:800px; 
+    margin-left: auto;
+    margin-right: auto;
+
+	border-collapse:collapse;
+
+	}
+ .blockheader{ left:-20px;top:-20px; position:relative; line-height:25px; display:inline-block; padding:0px 10px 0px 10px; background:black; color:white; width:780px; margin:0;}
+ 
+ 
+table, th, td { border-bottom:2px solid black; margin-top:50px;
+   border: 2px solid black;
+}
+tr{   vertical-align: center; text-align: center;}
+.iconcol{width:100px;}
+
+thead{color:white; background:black; }
+
+td{padding:5px; }
+.sep{height:5px;}
+.dark{background:#555555;}
+a{color:black;}
+
+.menuheader{ width:100%; margin:0; position:absolute; display:block; top:0; left:0; height:90px; background:black; color:#FEC80D; text-align:center;line-height:15px;}
+.fixmenudiv{left:0;top:0px;  color:white ; position:fixed; padding:20px; background:black;}
+.fixmenudiv a{color:white; text-decoration: none;}
+
+
+.gradlight{background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,0.47) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(255,255,255,0.47))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,0.47) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,0.47) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,0.47) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,0.47) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#78ffffff',GradientType=0 ); /* IE6-9 */
+	opacity:1; transition:opacity 1s;
+	}
+</style>
+
+
+<body style="background:lightgrey; padding:0;">
+<div class="menuheader">
+<img src="icons/pixan.svg" style="margin-top:5px;"> <br> <b>Quick Reference</b>
+</div>
+
+<br><br><br><br>
+<div class="fixmenudiv">
+
+<a href="#getstart">Getting started</a> <br>
+<a href="#loadsprites">Loading a sprite sheet</a> <br><br>
+<a href="#tool">Drawing Tools</a> <br>
+<a href="#edit">Editing Tools</a> <br>
+<a href="#file">File Options</a> <br>
+<a href="#anim">Animation Tools</a> <br>
+<a href="#important">Important Notes</a> <br>
+<a href="#about">About</a> <br>
+</div>
+
+<div class="blockdiv gradlight"id="getstart">
+<div class="blockheader">Getting started</div>
+Here's a quick way to try out the program:
+<ul>
+<li> On startup the program starts with an empty 50×60 pixels spritesheet with 12 frames. </li> 
+<li> Click on the bottom timeline to change the current frame. You'll see the red frame moving. 
+	<br>(As long as you click between 1-12 frames) </li> 
+<li> Now click the "Onion Toggle" button once. This will allow seeing neighbour frames while animating.</li>
+<li> With the right mouse button you could set which of the neighbour frames you want to see; 
+	<br> click on the timeline next to the current frame on both sides! </li>
+<li> Now select the first frame then draw a little cirlce in the window called "new"!</li>
+<li> Now select the second frame (you could also use the arrow buttons on your keyboard);
+	 <br>you should see a transparent image of the circle you just drawn. </li>
+<li> Draw a second circle over the previous one, but move it a bit away in one direction. </li>
+<li> Select the third frame and draw an another cirlce, now a bit further away from the second one. </li>
+<li> Continue drawing until you reach the last frame!</li>
+<li> When you're done press the Play button, or press Enter.</li>
+<li> Congratulations! You've just made your first animation in PixelAnimator!
+	 <br>Now try something more complex! </li>
+</div>
+
+
+<div class="blockdiv gradlight"id="loadsprites">
+<div class="blockheader">Loading a sprite sheet </div>
+If you want to load a spritesheet do the following:
+<ul>
+<li> Click the "New Spritesheet" button on the top right. </li> 
+<li> In the popup window set the spw value to your spritesheet's width; and the sph to the height!  </li> 
+<li> After you've created the new empty sheet click the "Open Spritesheet" button, and load your sprite!  </li> 
+<li> Done!</li>
+
+</div>
+
+
+<table id="tool" class="gradlight" >
+		<thead><tr><th>Tool</th><th style="width:50px;"> </th><th></th><th>Ctrl</th></tr></thead>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td rowspan="2"class="iconcol">		<img src="icons/block_pen.svg" class="blockmenuface"> Pencil </td> 
+			<th>Left Click</th>
+			<td>Draws a 1×1 line of the selected color.</td>
+			<td>Picks the color under the current cursor position.</td>
+		</tr>
+		 <tr> 
+			<th>Right Click</th>
+			<td>Erases a 2×2 line.</td>
+			<td>Picks the color under the current cursor position, <br>and sets it as the <a href="#">shade</a> color.</td>
+		</tr>
+ <tr class="sep"><tr/>
+		<tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_eraser.svg"  class="blockmenuface"> Eraser </td> 
+			<th></th>
+			<td colspan="3"> <i>Implemented, see Pencil Right click.</i> </td>
+		</tr>
+ <tr class="sep"><tr/>
+		<tr> 
+			<td class="iconcol">		<img src="icons/block_rectselect.svg" class="blockmenuface"> Select </td> 
+			<th></th>
+			<td>Drags a current selection, or makes a new one.</td>
+			<td>Skews the selection.</td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td rowspan="2"class="iconcol">		<img src="icons/block_fill.svg" class="blockmenuface"> <br> Fill </td> 
+			<th>Left Click</th>
+			<td>Fills the area with the selected color.</td>
+			<td rowspan="2"></td>
+		</tr>
+		 <tr> 
+			<th>Right Click</th>
+			<td>Erases the fillable area.</td>
+			
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td rowspan="2"class="iconcol">		<img src="icons/block_fillcont.svg" class="blockmenuface"> Outline Fill </td> 
+			<th>Left Click</th>
+			<td>Creates a black outline around the current area.</td>
+			<td rowspan="2"></td>
+		</tr>
+		 <tr> 
+			<th>Right Click</th>
+			<td>Creates a black outline inside the current area.</td>
+		</tr>
+ <tr class="sep"><tr/>
+		<tr> 
+			<td class="iconcol">		<img src="icons/block_contour.svg"  class="blockmenuface"> Outline </td> 
+			<th></th>
+			<td colspan="3"> Outlines the current frame when clicked. </td>
+		</tr>
+ <tr class="sep"><tr/>
+		<tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_colorpicker.svg"  class="blockmenuface"> Colorpicker </td> 
+			<th></th>
+			<td colspan="3"> <i>Implemented, see Pencil Ctrl click.</i> </td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td rowspan="2"class="iconcol">		<img src="icons/block_shade.svg" class="blockmenuface"> Shading Tool </td> 
+			<th>Left Click</th>
+			<td>Shades the given color under the cursor <br> with it's <a href="#">shade-pair</a>.</td>
+			<td rowspan="2"></td>
+		</tr>
+		 <tr> 
+			<th>Right Click</th>
+			<td>Lightens the given color under the cursor <br> with it's shade-pair.</td>
+		</tr>
+ <tr class="sep"><tr/>
+		<tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_freeselect.svg"  class="blockmenuface"> Free-select </td> 
+			<th></th>
+			<td colspan="3"> <i>Not yet implemented</i> </td>
+		</tr>
+ <tr class="sep"><tr/>
+		<tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_line.svg"  class="blockmenuface"> <br>Line Tool </td> 
+			<th></th>
+			<td colspan="3"> <i>Not yet implemented</i> </td>
+		</tr>
+ <tr class="sep"><tr/>
+		<tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_rect.svg"  class="blockmenuface"> <br>Rectangle Tool </td> 
+			<th></th>
+			<td colspan="3"> <i>Not yet implemented</i> </td>
+		</tr>
+ <tr class="sep"><tr/>
+		<tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_oval.svg"  class="blockmenuface"> <br> Oval Tool </td> 
+			<th></th>
+			<td colspan="3"> <i>Not yet implemented</i> </td>
+		</tr>
+
+		</table>
+
+
+<br>
+		
+<table  id="edit" class="gradlight">
+		<thead><tr><th>Edit</th>  <th>Description</th>  <th style="width:100px;">Quick Key</th></tr></thead>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td class="iconcol">		<img src="icons/block_undo.svg" class="blockmenuface"> Undo </td> 
+			<td>Undoes your mistakes up to 50 times.</td>
+			<td>Ctrl+Z <br> Ctrl+Space</td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td class="iconcol">		<img src="icons/block_redo.svg" class="blockmenuface"> Redo </td> 
+			<td>Reverts the undoes.</td>
+			<td>Ctrl+Y</td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td class="iconcol">		<img src="icons/block_copy.svg" class="blockmenuface"> Copy </td> 
+			<td>Copies the current selection to the app's local clipboard.</td>
+			<td>C</td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td class="iconcol">		<img src="icons/block_paste.svg" class="blockmenuface"> Paste </td> 
+			<td>Pastes image from the app's local clipboard.<br>Use Ctrl + V to paste from the OS's clipboard.</td>
+			<td>V<br>Ctrl+V</td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_cut.svg" class="blockmenuface"> <br>Cut </td> 
+			<td><i>Not yet implemented. <br> To delete unnecessary items you could drag them "off stage".</i></td>
+			<td>X</td>
+		</tr>
+		
+ <tr class="sep"><tr/>
+		 <tr > 
+			<td class="iconcol">		<img src="icons/block_addframe.svg" class="blockmenuface"> <br>Insert Frame</td> 
+			<td> Adds an empty frame front of the current frame. <br> <i>To add a frame after the last one, move behind the last frame with the arrow keys </i> </td>
+			<td></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr > 
+			<td class="iconcol">		<img src="icons/block_deleteframe.svg" class="blockmenuface"> <br>Remove Frame</td> 
+			<td> Deletes the current frame. <br> <i>Not undoable yet, and cripples the undo buffer; be careful!</i> </td>
+			<td></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_copyframe.svg" class="blockmenuface"> <br>Copy Frame </td> 
+			<td><i>Not yet implemented.</i></td>
+			<td></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_pasteframe.svg" class="blockmenuface"> <br>Paste Frame </td> 
+			<td><i>Not yet implemented.</i></td>
+			<td></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_cutframe.svg" class="blockmenuface"> <br>Cut Frame </td> 
+			<td><i>Not yet implemented.</i></td>
+			<td></td>
+		</tr>
+
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_mirrorvert.svg" class="blockmenuface"> <br>Flip Vert. </td> 
+			<td><i>Not yet implemented.</i></td>
+			<td></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_mirrorhor.svg" class="blockmenuface"> <br>Flip Hor. </td> 
+			<td><i>Not yet implemented.</i></td>
+			<td></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_rotateleft.svg" class="blockmenuface"> <br>Rotate C.wise </td> 
+			<td><i>Not yet implemented.</i></td>
+			<td></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_rotateright.svg" class="blockmenuface"> <br>Rotate Cc.wise </td> 
+			<td><i>Not yet implemented.</i></td>
+			<td></td>
+		</tr>
+		</table>
+	
+<br>
+	
+<table  id="file" class="gradlight">
+		<thead><tr><th>File</th>  <th>Description</th>  </tr></thead>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td class="iconcol">		<img src="icons/block_newsheet.svg" class="blockmenuface"> <br>New Sheet </td> 
+			<td> Creates a new spritesheet with the attributes of width <b>(spw)</b>, height <b>(sph)</b> and frame count <b>(count)</b>  </td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td class="iconcol">		<img src="icons/block_opensheet.svg" class="blockmenuface"> <br>Open Sheet </td> 
+			<td> Loads a spritesheet into the currently active one.
+				<br><i>Make sure you've prepared a new sheet with the matching dimensions before loading one.</i>	</td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td class="iconcol">		<img src="icons/block_savesheet.svg" class="blockmenuface"> <br>Save Sheet </td> 
+			<td> Saves the currently active spritesheet as a .png file.  </td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_newproj.svg" class="blockmenuface"> <br>New Project </td> 
+			<td> <i>Not yet implemented.</i></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_openproj.svg" class="blockmenuface"> <br>Open Project </td> 
+			<td> <i>Not yet implemented.</i></td>
+		</tr>
+ <tr class="sep"><tr/>
+		 <tr class="dark"> 
+			<td class="iconcol">		<img src="icons/block_saveproj.svg" class="blockmenuface"> <br>Save Project </td> 
+			<td> <i>Not yet implemented.</i></td>
+		</tr>
+</table>
+
+
+<table id="anim" class="gradlight" >
+		<thead><tr><th>Animation</th><th></th></tr></thead>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td>Play</td>
+			<td>Animates the current spritesheet. 
+				<br><i>Presseng Enter does the same.</i></td>
+		</tr>
+		 <tr> 
+			<td>fps</td>
+			<td>Sets the animation speed for the spritesheet.</td>
+		</tr>
+		 <tr> 
+			<td>zoom</td>
+			<td>Enlarges the current spritesheet's window.</td>
+		</tr>
+		 <tr> 
+			<td>Onion Toggle</td>
+			<td>Toggles onion frames visibility.</td>
+		</tr>
+		<tr> 
+			<td>Frame Timeline</td>
+			<td>Clicking with left mouse button selects the given frame.
+			<br><i>Right mouse button sets the onion frames.</i></td>
+		</tr>
+
+</table>
+
+
+
+<div class="blockdiv gradlight"id="important">
+<div class="blockheader">Important Notes</div>
+The program is under development, so expect bugs and lacking features.
+<br>Some of the most noteable:
+<ul>
+<li> No warnig on quit. Save your work often, and do not press Ctrl+W accidentally  </li>
+<li> Opening a file overwrites the currently active one. Make an empty sheet before doing so.  </li>
+<li> The first frame of sheets rarely gets eaten by the undobuffers; haven't found a cause yet;
+	<br>save your first frames! </li>
+<li> Deleting and adding frames doesn't have undo, and overthrows the undo buffer, so be cautious! </li>
+<li> Opening the same file twice in a row will fail. Open something else, and try again. </li>
+<li> Many other minor ones, most of them without any serious consequences; I'm working on them though. </li>
+</div>
+
+
+<div class="blockdiv gradlight"id="about">
+<div class="blockheader">About</div>
+PixelAnimator is a Webkit based, [planned] cross-platform animation software, designed for swift production of "retro-styled" pixel sprite animation.
+You're free to use the software for your own purposes.
+<br><br>pistatic © 2014 
+</div>
+
+
+</body>
+</html>
