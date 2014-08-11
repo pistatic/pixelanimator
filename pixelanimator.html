@@ -208,7 +208,7 @@ zoom:×<input type="number" value=5 min=1 id="zoominput" style="width:40px;">
 <script src="jquery-1.11.0.min.js"></script>
 <script>
 
- window.addEventListener('resize', windowresize, false);
+
 function windowresize() {
             mainoverlay.width = window.innerWidth;
             mainoverlay.height = window.innerHeight;
@@ -219,14 +219,6 @@ var btn=document.createElement("BUTTON");
 document.body.appendChild(btn);
 };
 
-var colorslocked=false;
-var currentColorIndex=0;
-var junkColorIndex=-1;
-var colorList=new Array(  {m:{r:0,g:0,b:0}, a:null},		{m:{r:255,g:255,b:255},a:null},		{m:{r:255,g:0,b:0}, a:{r:200,g:0,b:0}},		{m:{r:0,g:255,b:0}, a:{r:0,g:200,b:0}},		{m:{r:0,g:0,b:255}, a:{r:0,g:0,b:200}},		{m:{r:125,g:0,b:125}, a:{r:100,g:0,b:100}},
-						  {m:{r:255,g:125,b:0}, a:null},	{m:{r:255,g:255,b:0},a:null},		{m:{r:255,g:0,b:255}, a:null},				{m:{r:0,g:255,b:255}, a:null},				{m:{r:125,g:125,b:125}, a:null},				{m:{r:0,g:125,b:0}, a:null}  ,
-						  
-						  {m:{r:125,g:125,b:125}, a:null},  {m:{r:125,g:125,b:125}, a:null},	{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null} );
-						 
 
 
 function canvasresize( wid, hei){trace(wid);
@@ -262,37 +254,6 @@ function removeFrame(){trace(aw.spc.toString()+" "+currentframe.toString())
 }
 
 
-var undoDepth=50;
-var animrunning=false;
-
-var windowList=new Array(); /*records of open windows and their settings*/
-
-var aw=new Object(); //ActiveWindow
-//id name aw.realc (aw.realctx) (drawcanvas) (drawctx) (drawheader) (undobuff) (redobuff) spw sph spc zoomv fpsv (currentframe)
-//pure global
-var drawheader;
-var zoomv=5;
-var fpsv=15;
-var currentframe=0;
-var spw=50; //spritewidth
-var sph=60;
-var spc=30; //spritecount
-var undobuff=new Array();
-var redobuff=new Array();
-var onion=false;
-var onimin=0;
-var onimax=0;
-
-/*temp*/var bind=null;
-
-var col={r:0,g:0,b:0};
-var selx=0; var sely=0;var selw=0; var selh=0;
-var dimmer;
-var ctrlOn=false;
-var shiftOn=false;
-var bindInProgress=false;
-//var tool="pencil";
-
 
 function setTimelinePicker(){ //set
   var tlpicker=document.getElementById("timelinepicker");
@@ -322,53 +283,6 @@ function setupTimelinePicker(){ //setup
 }
 
 
-setupTimelinePicker();
-
-windowresize();
-var mainoverc=document.getElementById("mainoverlay");
-mainoverctx=mainoverc.getContext("2d");
-
-var dback=document.getElementById("drawback");
-var overc=document.getElementById("drawoverlay");
-var onionc=document.getElementById("onioncanvas");
-var overctx=overc.getContext("2d");
-var onionctx=onionc.getContext("2d");
-	onionctx.globalAlpha = 0.5;
-
-
-
-
-    //aw.realc = document.getElementById("realcanvas"); //createElement('canvas');
-    //aw.realctx = aw.realc.getContext('2d');
-
-
-var tempc = document.createElement('canvas'); 
-document.body.appendChild(tempc);tempc.style.position="fixed";tempc.style.top="100px";tempc.style.left="5px";
- tempc.width=spw;  tempc.height=sph; 
-
-var tempctx = tempc.getContext('2d');
-
-var dumpc = document.createElement('canvas'); 
-var dumpctx = dumpc.getContext('2d');
-
-
-//document.body
-//document.getElementById("timelinediv").appendChild(aw.realc);
-
-$('#fpsinput').bind('input', function() { fpsv=$(this).val(); });/*nem rakhatom c inicializálás elé*/
-$('#zoominput').bind('input', function() { setzoom( $(this).val() ); }  ); /*nem rakhatom ctx beállítások után mert elmos; wtfff*/
-
-
-        /*ctx.imageSmoothingEnabled = false;
-        ctx.webkitImageSmoothingEnabled = false;
-        ctx.mozImageSmoothingEnabled = false;*/
-		
-        onionctx.imageSmoothingEnabled = false;
-        onionctx.webkitImageSmoothingEnabled = false;
-        onionctx.mozImageSmoothingEnabled = false;
-		
-		
-        
 
 
 /*function applyzoom(){
@@ -397,51 +311,9 @@ var imgData=ctx.getImageData(10,10,50,50);
 ctx.putImageData(imgData,10,70);
 }
 
-var img = new Image(); img.src="hoodie.png";
-img.onload=function(){
-  
-  
-  
-  //ctx.drawImage(img,0,0);
-  
-  
-  //aw.realc.width=img.width; aw.realc.height=sph;
 
-  
-  createnewwindow(50, 60, 12);
-  
-  
-  /*/ //aw.realctx.drawImage(img, 0, 0 , img.width,img.height);
-  
-  //aw.realctx.translate(0.5, -0.5);
-  /*aw.realctx.lineWidth=1;
-  aw.realctx.beginPath();
-        aw.realctx.moveTo(1, 2);
-		aw.realctx.lineTo(170, 15);
-        aw.realctx.stroke();*/
-  
-  
 
-  
-  drawheaderinit(150,150);
-  setzoom(zoomv);
-  fpsv=aw.fpsv=15;
-  document.getElementById('fpsinput').value=15;
-  setcurrentframe(currentframe);
 
-  
-  
-  
-  /* // invert colors
-  for (var i=0;i<imgData.data.length;i+=4)
-    {
-    imgData.data[i]=255-imgData.data[i];
-    imgData.data[i+1]=255-imgData.data[i+1];
-    imgData.data[i+2]=255-imgData.data[i+2];
-    imgData.data[i+3]=255;
-    }
-  ctx.putImageData(imgData,0,0);*/
-};
 /*
 var img2 = new Image();
 img2.src = 'http://upload.wikimedia.org/wikipedia/commons/f/f0/Pixelart-tv-iso.png';
@@ -630,15 +502,7 @@ vanselect=false; softselect=false;
 aw.realctx.drawImage(tempc, aw.spw*currentframe, 0); tempctx.clearRect(0,0,aw.spw,aw.sph);	
 
 overctx.clearRect(0,0,aw.spw*zoomv,aw.sph*zoomv);
-/*	if(vanselect){
-		vanselect=false;
-		overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
-		if(softselect){
-			aw.realctx.drawImage(tempc, spw*currentframe, 0);
-			softselect=false;
-		}
-	tempctx.clearRect(0,0,spw,sph);	
-	} */
+
 }
 
 
@@ -725,17 +589,7 @@ function drawheaderdragend(e){
 
 
 
-    drawoverlay.addEventListener('mousedown', drawevent, false);
-	drawoverlay.addEventListener('touchstart', drawevent, false);
-    window.addEventListener('mousemove', drawevent, false);
-	window.addEventListener('touchmove', drawevent, false);
-	window.addEventListener('mouseup', drawevent, false);
-    window.addEventListener('touchend',   drawevent, false);
-	drawoverlay.addEventListener('mouseout',   drawevent, false);
-	drawoverlay.addEventListener('touchleave',   drawevent, false);
-	
-	/*window*/drawoverlay.addEventListener('contextmenu', rightclickmenu  , false);
-	document.getElementById("timelinediv").addEventListener('contextmenu', rightclickmenu  , false);
+
 	
 	function rightclickmenu(e){e.preventDefault(); return false;}
 	
@@ -753,8 +607,7 @@ function toolpick (e) {
     //}
   }
   
-  var drawpixel = tempctx.createImageData(2,2);;
-  var drawpixelsize = 2;
+
  function pencilpick(e){ //alert(e);
 	switch(e){
 	case "1": drawpixel = tempctx.createImageData(1,1); 
@@ -780,9 +633,161 @@ function toolpick (e) {
 	
  }
  }
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ var undoDepth=50;
+var animrunning=false;
+
+var windowList=new Array(); /*records of open windows and their settings*/
+
+var aw=new Object(); //ActiveWindow
+//id name aw.realc (aw.realctx) (drawcanvas) (drawctx) (drawheader) (undobuff) (redobuff) spw sph spc zoomv fpsv (currentframe)
+//pure global
+var drawheader;
+var zoomv=5;
+var fpsv=15;
+var currentframe=0;
+var spw=50; //spritewidth
+var sph=60;
+var spc=30; //spritecount
+var undobuff=new Array();
+var redobuff=new Array();
+var onion=false;
+var onimin=0;
+var onimax=0;
+
+/*temp*/var bind=null;
+
+var col={r:0,g:0,b:0};
+var selx=0; var sely=0;var selw=0; var selh=0;
+var dimmer;
+var ctrlOn=false;
+var shiftOn=false;
+var bindInProgress=false;
+
+var colorslocked=false;
+var currentColorIndex=0;
+var junkColorIndex=-1;
+var colorList;
+
+    var drawpixel ;
+  var drawpixelsize ;
+  var erasepixel ;
+  
+  var mainoverc;
+  var dback;
+var overc;
+var onionc;
+var overctx;
+var onionctx;
+var tempc; 
+var tempctx ;
+var dumpc ; 
+var dumpctx ;
+
+ /*ONLOAD*/
+ window.onload=function(){
+ 
+
+colorList=new Array(  {m:{r:0,g:0,b:0}, a:null},		{m:{r:255,g:255,b:255},a:null},		{m:{r:255,g:0,b:0}, a:{r:200,g:0,b:0}},		{m:{r:0,g:255,b:0}, a:{r:0,g:200,b:0}},		{m:{r:0,g:0,b:255}, a:{r:0,g:0,b:200}},		{m:{r:125,g:0,b:125}, a:{r:100,g:0,b:100}},
+						  {m:{r:255,g:125,b:0}, a:null},	{m:{r:255,g:255,b:0},a:null},		{m:{r:255,g:0,b:255}, a:null},				{m:{r:0,g:255,b:255}, a:null},				{m:{r:125,g:125,b:125}, a:null},				{m:{r:0,g:125,b:0}, a:null}  ,
+						  
+						  {m:{r:125,g:125,b:125}, a:null},  {m:{r:125,g:125,b:125}, a:null},	{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null} );
+						 
+
+
+//var tool="pencil";
+ 
+setupTimelinePicker();
+ window.addEventListener('resize', windowresize, false);
+windowresize();
+ mainoverc=document.getElementById("mainoverlay");
+mainoverctx=mainoverc.getContext("2d");
+
+ dback=document.getElementById("drawback");
+ overc=document.getElementById("drawoverlay");
+ onionc=document.getElementById("onioncanvas");
+ overctx=overc.getContext("2d");
+ onionctx=onionc.getContext("2d");
+	onionctx.globalAlpha = 0.5;
+    //aw.realc = document.getElementById("realcanvas"); //createElement('canvas');
+    //aw.realctx = aw.realc.getContext('2d');
+
+ tempc = document.createElement('canvas'); 
+document.body.appendChild(tempc);tempc.style.position="fixed";tempc.style.top="100px";tempc.style.left="5px";
+ tempc.width=spw;  tempc.height=sph; 
+
+ tempctx = tempc.getContext('2d');
+
+ dumpc = document.createElement('canvas'); 
+ dumpctx = dumpc.getContext('2d');
+
+
+//document.body
+//document.getElementById("timelinediv").appendChild(aw.realc);
+
+$('#fpsinput').bind('input', function() { fpsv=$(this).val(); });/*nem rakhatom c inicializálás elé*/
+$('#zoominput').bind('input', function() { setzoom( $(this).val() ); }  ); /*nem rakhatom ctx beállítások után mert elmos; wtfff*/
+
+
+        /*ctx.imageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+        ctx.mozImageSmoothingEnabled = false;*/
+		
+        onionctx.imageSmoothingEnabled = false;
+        onionctx.webkitImageSmoothingEnabled = false;
+        onionctx.mozImageSmoothingEnabled = false;
+  createnewwindow(50, 60, 12);
+  drawheaderinit(150,150);
+  setzoom(zoomv);
+  fpsv=aw.fpsv=15;
+  document.getElementById('fpsinput').value=15;
+  setcurrentframe(currentframe);
+
+
+     drawoverlay.addEventListener('mousedown', drawevent, false);
+	drawoverlay.addEventListener('touchstart', drawevent, false);
+    window.addEventListener('mousemove', drawevent, false);
+	window.addEventListener('touchmove', drawevent, false);
+	window.addEventListener('mouseup', drawevent, false);
+    window.addEventListener('touchend',   drawevent, false);
+	drawoverlay.addEventListener('mouseout',   drawevent, false);
+	drawoverlay.addEventListener('touchleave',   drawevent, false);
+	
+	/*window*/drawoverlay.addEventListener('contextmenu', rightclickmenu  , false);
+	document.getElementById("timelinediv").addEventListener('contextmenu', rightclickmenu  , false);
+ 
+     drawpixel = tempctx.createImageData(2,2);;
+   drawpixelsize = 2;
+   erasepixel = tempctx.createImageData(2,2); 
+  
  pencilpick("1");
- var erasepixel = tempctx.createImageData(2,2); 
  for(var i=0;i<16;i++) erasepixel.data[i]=255;
+   var colorgrid = document.getElementById("colorgrid");
+
+  for(var i=0; i<18; i++){
+    var setcol=colorList[i]; 
+	var newcell = colorgrid.rows[Math.floor(i/6)].insertCell(i%6);
+	if(i<12) newcell.className="colorcube";
+	else     newcell.className="colorcube2";
+	newcell.style.background=rgbToHex(setcol.m.r,setcol.m.g,setcol.m.b);
+	//newcell.value=rgbToHex(setcol.m.r,setcol.m.g,setcol.m.b);
+	if(setcol.a!=null)newcell.innerHTML="<div class='colorcube_alt' style='background:"+rgbToHex(setcol.a.r,setcol.a.g,setcol.a.b)+"'></div>";
+	newcell.target=i;
+	newcell.onclick= function(){colorGridPick(this.target);};
+  }
+  
+  }
+ /*-----*/
+ 
+ 
   
 
 function componentToHex(c) {var hex = c.toString(16); return hex.length == 1 ? "0" + hex : hex;}
@@ -845,19 +850,7 @@ for(var j=0; j<colorgrid.rows[i].cells.length;j++){
 		colorgrid.rows[i].cells[j].value=rgbToHex(setcol.r,setcol.g,setcol.b);
 	colorgrid.rows[i].cells[j].onclick= function(){colorGridPick(this.value);};
 }}  */
-  var colorgrid = document.getElementById("colorgrid");
 
-  for(var i=0; i<18; i++){
-    var setcol=colorList[i]; 
-	var newcell = colorgrid.rows[Math.floor(i/6)].insertCell(i%6);
-	if(i<12) newcell.className="colorcube";
-	else     newcell.className="colorcube2";
-	newcell.style.background=rgbToHex(setcol.m.r,setcol.m.g,setcol.m.b);
-	//newcell.value=rgbToHex(setcol.m.r,setcol.m.g,setcol.m.b);
-	if(setcol.a!=null)newcell.innerHTML="<div class='colorcube_alt' style='background:"+rgbToHex(setcol.a.r,setcol.a.g,setcol.a.b)+"'></div>";
-	newcell.target=i;
-	newcell.onclick= function(){colorGridPick(this.target);};
-  }
 
 
 function colorGridPick(e){
@@ -1119,7 +1112,7 @@ function setCol32(pic,px,py,col){
 	  else /*no toolstarted*/
 	  {		overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
 			overctx.beginPath();
-			overctx.setLineDash([0]);
+			if(overctx.setLineDash)overctx.setLineDash([0]);
 			selx=Math.floor(mouseX/zoomv);
 			sely=Math.floor(mouseY/zoomv);
 			overctx.rect(selx*zoomv,  sely*zoomv,  zoomv,  zoomv);
@@ -1706,7 +1699,7 @@ window.addEventListener("keyup", function(e) {var evtobj = window.event? event :
 				shiftOn = evtobj.shiftKey ? true : false; 
 				ctrlOn =  evtobj.ctrlKey  ? true : false; 
 			},false);
-	
+window.addEventListener("paste", clipboardPasteHandler);
 	
 
 
@@ -1803,7 +1796,7 @@ if (!window.Clipboard) {
    document.addEventListener("click", function() { pasteCatcher.focus(); });
 } 
 // Add the paste event listener
-/*event*/ window.addEventListener("paste", clipboardPasteHandler);
+/*event*/ // replaced:  window.addEventListener("paste", clipboardPasteHandler);
  
 /* Handle paste events */
 function clipboardPasteHandler(e) {
