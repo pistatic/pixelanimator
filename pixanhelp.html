@@ -67,7 +67,7 @@ a{color:black;}
 <div class="blockheader">Getting started</div>
 Here's a quick way to try out the program:
 <ul>
-<li> On startup the program starts with an empty 50×60 pixels spritesheet with 12 frames. </li> 
+<li> On startup the program starts with an empty 50&#215;60 pixels spritesheet with 12 frames. </li> 
 <li> Click on the bottom timeline to change the current frame. You'll see the red frame moving. 
 	<br>(As long as you click between 1-12 frames) </li> 
 <li> Now click the "Onion Toggle" button once. This will allow seeing neighbour frames while animating.</li>
@@ -90,8 +90,8 @@ Here's a quick way to try out the program:
 If you want to load a spritesheet do the following:
 <ul>
 <li> Click the "New Spritesheet" button on the top right. </li> 
-<li> In the popup window set the spw value to your spritesheet's width; and the sph to the height!  </li> 
-<li> After you've created the new empty sheet click the "Open Spritesheet" button, and load your sprite!  </li> 
+<li> In the popup window set the "spw" value to your spritesheet's individual sprite width; and the "sph" to its height  </li> 
+<li> After you've created the new empty sheet click the "Open Spritesheet" button, and load your sprite  </li> 
 <li> Done!</li>
 
 </div>
@@ -103,12 +103,12 @@ If you want to load a spritesheet do the following:
 		 <tr> 
 			<td rowspan="2"class="iconcol">		<img src="icons/block_pen.svg" class="blockmenuface"> Pencil </td> 
 			<th>Left Click</th>
-			<td>Draws a 1×1 line of the selected color.</td>
+			<td>Draws a 1&#215;1 line of the selected color.</td>
 			<td>Picks the color under the current cursor position.</td>
 		</tr>
 		 <tr> 
 			<th>Right Click</th>
-			<td>Erases a 2×2 line.</td>
+			<td>Erases a 2&#215;2 line.</td>
 			<td>Picks the color under the current cursor position, <br>and sets it as the <a href="#">shade</a> color.</td>
 		</tr>
  <tr class="sep"><tr/>
@@ -265,27 +265,27 @@ If you want to load a spritesheet do the following:
 		</tr>
 
  <tr class="sep"><tr/>
-		 <tr class="dark"> 
+		 <tr > 
 			<td class="iconcol">		<img src="icons/block_mirrorvert.svg" class="blockmenuface"> <br>Flip Vert. </td> 
-			<td><i>Not yet implemented.</i></td>
+			<td>Vertically flips the selection.</td>
 			<td></td>
 		</tr>
  <tr class="sep"><tr/>
-		 <tr class="dark"> 
+		 <tr > 
 			<td class="iconcol">		<img src="icons/block_mirrorhor.svg" class="blockmenuface"> <br>Flip Hor. </td> 
-			<td><i>Not yet implemented.</i></td>
+			<td>Horizontally flips the selection.</td>
 			<td></td>
 		</tr>
  <tr class="sep"><tr/>
-		 <tr class="dark"> 
+		 <tr > 
 			<td class="iconcol">		<img src="icons/block_rotateleft.svg" class="blockmenuface"> <br>Rotate C.wise </td> 
-			<td><i>Not yet implemented.</i></td>
+			<td>Rotates the selection clockwise.</td>
 			<td></td>
 		</tr>
  <tr class="sep"><tr/>
-		 <tr class="dark"> 
+		 <tr > 
 			<td class="iconcol">		<img src="icons/block_rotateright.svg" class="blockmenuface"> <br>Rotate Cc.wise </td> 
-			<td><i>Not yet implemented.</i></td>
+			<td>Rotates the selection counterclockwise.</td>
 			<td></td>
 		</tr>
 		</table>
@@ -346,14 +346,36 @@ If you want to load a spritesheet do the following:
 		</tr>
 		 <tr> 
 			<td>Onion Toggle</td>
-			<td>Toggles onion frames visibility.</td>
+			<td>Toggles onion frames visibility. (Seeing neighbour frames)</td>
+		</tr>
+		 <tr> 
+			<td>Toggle Transparency</td>
+			<td>Makes the current window somewhat transparent. Useful tracing [a stick animation for example].</td>
 		</tr>
 		<tr> 
 			<td>Frame Timeline</td>
 			<td>Clicking with left mouse button selects the given frame.
 			<br><i>Right mouse button sets the onion frames.</i></td>
 		</tr>
+</table>
 
+
+<table id="colors" class="gradlight" >
+		<thead><tr><th>Color Grid</th><th></th></tr></thead>
+ <tr class="sep"><tr/>
+		 <tr> 
+			<td>The Color Grid</td>
+			<td>Changes the color of the Pencil and Fill tools. 
+			<i>
+			<br>To mix a custom color, click the grand color slot.
+			<br>To copy colors from your spritesheet, use Color picker tool (Pencil + Ctrl for now) :
+			<br>Left click sets the main color, the right click sets the shade pair [used with the Shading tool]</i></td>
+		</tr>
+		 <tr> 
+			<td>Lock Colors</td>
+			<td>Using the Color pick tool or mixing a new color won't affect the current palette (first 2 lines on the grid). </td>
+		</tr>
+		 
 </table>
 
 
@@ -369,7 +391,7 @@ The program is under development, so expect bugs and lacking features.
 	<br>save your first frames! </li>
 <li> Deleting and adding frames doesn't have undo, and overthrows the undo buffer, so be cautious! </li>
 <li> Opening the same file twice in a row will fail. Open something else, and try again. </li>
-<li> Many other minor ones, most of them without any serious consequences; I'm working on them though. </li>
+<li> Many other minor issues, most of them without any serious consequences; I'm working on them though. </li>
 </div>
 
 
@@ -377,7 +399,7 @@ The program is under development, so expect bugs and lacking features.
 <div class="blockheader">About</div>
 PixelAnimator is a Webkit based, [planned] cross-platform animation software, designed for swift production of "retro-styled" pixel sprite animation.
 You're free to use the software for your own purposes.
-<br><br>pistatic © 2014 
+<br><br>pistatic &#169; 2014 
 </div>
 
 

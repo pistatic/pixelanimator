@@ -30,7 +30,7 @@ canvas{    image-rendering: optimizeSpeed;
     top:0; left:0; width:100%; height:100%; z-index:99; 
 	}
 .colorcube{width:17px;height:17px;border:2px solid black;    background:red; transition:border 0.3s; padding:0px; vertical-align:bottom; }
-.colorcube2{width:17px;height:17px;border:2px solid #222222; background:red; transition:border 0.3s; padding:0px;  vertical-align:bottom; }
+.colorcube2{width:17px;height:17px;border:2px solid #333333; background:red; transition:border 0.3s; padding:0px;  vertical-align:bottom; }
 .colorcube:hover, .colorcube2:hover , .colorcube_act, .colorcube2_act  {border:2px solid #FFAA00; padding:0px; width:17px;height:17px; vertical-align:bottom;}
 .colorcube_alt{width:100%; height:30%; bottom:0px; }
 
@@ -70,14 +70,14 @@ canvas{    image-rendering: optimizeSpeed;
 	<p id="debugp" style="position:absolute; top:80px;left:10px">debug</p>
 	<div class="toolpack tp1">
 		<div class="blockmenubutton" onclick="toolpick('pencil')" >				<img src="icons/block_pen.svg" title="Pencil" class="blockmenuface"></div>
-		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_eraser.svg" title="Eraser" class="blockmenuface"></div>
+		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_eraser.svg" title="Eraser - use Pencil with Right Click" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="toolpick('rectselect')">			<img src="icons/block_rectselect.svg" title="Select" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="toolpick('fill')">				<img src="icons/block_fill.svg" title="Fill" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="toolpick('outlinefill');">		<img src="icons/block_fillcont.svg" title="Outline Fill" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="outline()">						<img src="icons/block_contour.svg" title="Outline" class="blockmenuface"></div>
 		<br>
 		
-		<div class="blockmenubutton_ina" onclick=";">							<img src="icons/block_colorpicker.svg" title="Pick Color" class="blockmenuface"></div>
+		<div class="blockmenubutton_ina" onclick=";">							<img src="icons/block_colorpicker.svg" title="Pick Color - use Pencil with Ctrl" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="toolpick('shading');">		<img src="icons/block_shade.svg" title="Shading Tool" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick="toolpick('free-select')">		<img src="icons/block_freeselect.svg" title="Free-select" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick=";">							<img src="icons/block_line.svg" title="Line Tool" class="blockmenuface"></div>
@@ -103,8 +103,8 @@ canvas{    image-rendering: optimizeSpeed;
 		<div class="blockmenubutton" onclick="localPasteHandler();" >			<img src="icons/block_paste.svg" title="Paste" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_cut.svg" title="Cut" class="blockmenuface"></div>
 		&nbsp
-		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_mirrorvert.svg" title="Flip Vertically" class="blockmenuface"></div>
-		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_mirrorhor.svg" title="Flip Horizontally" class="blockmenuface"></div>
+		<div class="blockmenubutton" onclick="mirrorvert();" >							<img src="icons/block_mirrorvert.svg" title="Flip Vertically" class="blockmenuface"></div>
+		<div class="blockmenubutton" onclick="mirrorhor();" >							<img src="icons/block_mirrorhor.svg" title="Flip Horizontally" class="blockmenuface"></div>
 		<br>
 		<div class="blockmenubutton" onclick="addFrame()">						<img src="icons/block_addframe.svg" title="Insert Frame" class="blockmenuface"></div>
 		<div class="blockmenubutton" onclick="removeFrame()">					<img src="icons/block_deleteframe.svg" title="Remove Frame" class="blockmenuface"></div>
@@ -112,8 +112,8 @@ canvas{    image-rendering: optimizeSpeed;
 		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_pasteframe.svg" title="Paste Frame" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_cutframe.svg" title="Cut Frame" class="blockmenuface"></div>
 		&nbsp
-		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_rotateleft.svg" title="Rotate Clockwise" class="blockmenuface"></div>
-		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_rotateright.svg" title="Rotate Counterclockwise" class="blockmenuface"></div>
+		<div class="blockmenubutton" onclick="rotateleft();" >							<img src="icons/block_rotateleft.svg" title="Rotate Clockwise" class="blockmenuface"></div>
+		<div class="blockmenubutton" onclick="rotateright();" >							<img src="icons/block_rotateright.svg" title="Rotate Counterclockwise" class="blockmenuface"></div>
 	</div>
 	
 	
@@ -150,7 +150,7 @@ canvas{    image-rendering: optimizeSpeed;
 		<input class="settingsbutton "type="button" value="CONF" onclick=";">
 	</div>
 	
-	<select style="display:none" onchange="pencilpick(this.value)" id="pencilselect">
+	<select style=";" onchange="pencilpick(this.value)" id="pencilselect" title="Pencil size">
 		<option value="1">.</option>
 		<option value="2">.</option>
 		<option value="3">+</option>
@@ -178,10 +178,13 @@ canvas{    image-rendering: optimizeSpeed;
 </div>
 <div id="viewsettingsdiv" style="width:100%; padding:0px; position:fixed; bottom:0; left:0; background:black; color:white;">
 <button onclick="animate()">Play</button>
+
 fps:<input type="number" value=15 min=1 id="fpsinput" style="width:40px;">
-zoom:×<input type="number" value=5 min=1 id="zoominput" style="width:40px;">
+zoom:&#215;<input type="number" value=5 min=1 id="zoominput" style="width:40px;">
 &nbsp &nbsp || &nbsp &nbsp
 <button onclick="toggleOnion()" id="oniButton"> Onion Toggle</button>
+<button onclick="if(drawtrans){aw.drawctx.globalAlpha=1.0;setcurrentframe(currentframe);drawtrans=false} else {aw.drawctx.globalAlpha=0.9;setcurrentframe(currentframe);drawtrans=true}">Toggle Transparency</button>
+
 
 
 </div>
@@ -299,6 +302,7 @@ function setzoom(zv){
 	dback.height=overc.height=onionc.height=c.height = sph*zoomv;
 	ctx.imageSmoothingEnabled = false;ctx.webkitImageSmoothingEnabled = false;ctx.mozImageSmoothingEnabled = false;
 	onionctx.imageSmoothingEnabled = false; onionctx.webkitImageSmoothingEnabled = false; onionctx.mozImageSmoothingEnabled = false;
+	ctx.globalAlpha= drawtrans ? 0.9 : 1.0; // 
 	setcurrentframe(currentframe);
 	drawheader.style.width = spw*zoomv - 20 + 'px';
 	
@@ -406,6 +410,7 @@ function createnewwindow(width,height,count){
 	//aw.realctx=rec.realc.getContext('2d'); /*aw.realctx-et nem kell tárolni?*/ de
 	c=rec.drawc;
 	ctx=rec.drawctx;
+	
 	spw=rec.spw;
 	sph=rec.sph;
 	spc=rec.spc;
@@ -650,6 +655,7 @@ var windowList=new Array(); /*records of open windows and their settings*/
 var aw=new Object(); //ActiveWindow
 //id name aw.realc (aw.realctx) (drawcanvas) (drawctx) (drawheader) (undobuff) (redobuff) spw sph spc zoomv fpsv (currentframe)
 //pure global
+var drawtrans=false;
 var drawheader;
 var zoomv=5;
 var fpsv=15;
@@ -699,7 +705,7 @@ var dumpctx ;
 colorList=new Array(  {m:{r:0,g:0,b:0}, a:null},		{m:{r:255,g:255,b:255},a:null},		{m:{r:255,g:0,b:0}, a:{r:200,g:0,b:0}},		{m:{r:0,g:255,b:0}, a:{r:0,g:200,b:0}},		{m:{r:0,g:0,b:255}, a:{r:0,g:0,b:200}},		{m:{r:125,g:0,b:125}, a:{r:100,g:0,b:100}},
 						  {m:{r:255,g:125,b:0}, a:null},	{m:{r:255,g:255,b:0},a:null},		{m:{r:255,g:0,b:255}, a:null},				{m:{r:0,g:255,b:255}, a:null},				{m:{r:125,g:125,b:125}, a:null},				{m:{r:0,g:125,b:0}, a:null}  ,
 						  
-						  {m:{r:125,g:125,b:125}, a:null},  {m:{r:125,g:125,b:125}, a:null},	{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null},			{m:{r:125,g:125,b:125}, a:null} );
+						  {m:{r:0,g:0,b:0}, a:null},  {m:{r:0,g:0,b:0}, a:null},	{m:{r:0,g:0,b:0}, a:null},			{m:{r:0,g:0,b:0}, a:null},			{m:{r:0,g:0,b:0}, a:null},			{m:{r:0,g:0,b:0}, a:null} );
 						 
 
 
@@ -1542,8 +1548,66 @@ function outline(){
 	setcurrentframe(currentframe);
 }
 
-
-
+function rotateleft(){
+if(vanselect && movebuff!=null){
+	var returnbuff = tempctx.createImageData(movebuff.height,movebuff.width);
+	for(var i=0;i<returnbuff.width;i++)
+	  for(var j=0;j<returnbuff.height;j++)
+	    for(var k=0; k<4; k++){returnbuff.data[i*4 + j*returnbuff.width*4 + k]= movebuff.data[(returnbuff.height*returnbuff.width-i*returnbuff.height)*4 + j*4 + k];}
+	movebuff=returnbuff;
+	if(!softselect){aw.realctx.clearRect(selx+spw*currentframe,sely,selw,selh); softselect=true;}
+	selw=movebuff.width; selh=movebuff.height;
+	tempctx.clearRect(0,0,spw,sph);	
+	tempctx.putImageData(movebuff,selx,sely);		
+	setcurrentframe(currentframe); applytemp();
+	updateSelectRect();
+	}
+}
+function rotateright(){
+if(vanselect && movebuff!=null){
+	var returnbuff = tempctx.createImageData(movebuff.height,movebuff.width);
+	for(var i=0;i<returnbuff.width;i++)
+	  for(var j=0;j<returnbuff.height;j++)
+	    for(var k=0; k<4; k++){returnbuff.data[i*4 + j*returnbuff.width*4 + k]= movebuff.data[i*returnbuff.height*4 + (returnbuff.height-j)*4 + k];}
+	movebuff=returnbuff;
+	if(!softselect){aw.realctx.clearRect(selx+spw*currentframe,sely,selw,selh); softselect=true;}
+	selw=movebuff.width; selh=movebuff.height;
+	tempctx.clearRect(0,0,spw,sph);	
+	tempctx.putImageData(movebuff,selx,sely);		
+	setcurrentframe(currentframe); applytemp();
+	updateSelectRect();
+	}
+}
+function mirrorvert(){
+if(vanselect && movebuff!=null){
+	var returnbuff = tempctx.createImageData(movebuff.width,movebuff.height);
+	for(var i=0;i<returnbuff.width;i++)
+	  for(var j=0;j<returnbuff.height;j++)
+	    for(var k=0; k<4; k++){returnbuff.data[i*4 + j*returnbuff.width*4 + k]= movebuff.data[(returnbuff.width-i)*4 + j*returnbuff.width*4 + k];}
+	movebuff=returnbuff;
+	if(!softselect){aw.realctx.clearRect(selx+spw*currentframe,sely,selw,selh); softselect=true;}
+	selw=movebuff.width; selh=movebuff.height;
+	tempctx.clearRect(0,0,spw,sph);	
+	tempctx.putImageData(movebuff,selx,sely);		
+	setcurrentframe(currentframe); applytemp();
+	updateSelectRect();
+	}
+}
+function mirrorhor(){
+if(vanselect && movebuff!=null){
+	var returnbuff = tempctx.createImageData(movebuff.width,movebuff.height);
+	for(var i=0;i<returnbuff.width;i++)
+	  for(var j=0;j<returnbuff.height;j++)
+	    for(var k=0; k<4; k++){returnbuff.data[i*4 + j*returnbuff.width*4 + k]= movebuff.data[i*4 + (returnbuff.height*returnbuff.width-j*returnbuff.width)*4 + k];}
+	movebuff=returnbuff;
+	if(!softselect){aw.realctx.clearRect(selx+spw*currentframe,sely,selw,selh); softselect=true;}
+	selw=movebuff.width; selh=movebuff.height;
+	tempctx.clearRect(0,0,spw,sph);	
+	tempctx.putImageData(movebuff,selx,sely);		
+	setcurrentframe(currentframe); applytemp();
+	updateSelectRect();
+	}
+}
 
 
 
@@ -1611,6 +1675,7 @@ function filepick(e){ //for import
     img.src = src;
 	img.onload = function() {
 	aw.realc.width=img.width;
+	spc=aw.spc=Math.floor(aw.realc.width/aw.spw);
 	aw.realctx.drawImage(img, 0, 0 , img.width,img.height);
 	}
 }
@@ -1862,11 +1927,7 @@ function checkInput() {
 		
 		startselx=selx; startsely=sely; 
 		
-			overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
-			overctx.beginPath();
-			overctx.setLineDash([5,2]);
-			overctx.rect(selx*zoomv,  sely*zoomv,  selw*zoomv,  selh*zoomv);
-			overctx.stroke();
+			updateSelectRect();
 		
 		vanselect=true;
 		softselect=true;
@@ -1900,15 +1961,11 @@ function localPasteHandler(){
 		setcurrentframe(currentframe); applytemp();
 			
 			
-
+		updateSelectRect();
 		
 		startselx=selx; startsely=sely; 
 		
-			overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
-			overctx.beginPath();
-			overctx.setLineDash([5,2]);
-			overctx.rect(selx*zoomv,  sely*zoomv,  selw*zoomv,  selh*zoomv);
-			overctx.stroke();
+			
 			
 		vanselect=true;
 		softselect=true;};
@@ -1921,8 +1978,13 @@ function localPasteHandler(){
 	
 //=== /Clipboard ===============================================================
 
-
-
+function updateSelectRect(){
+			overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
+			overctx.beginPath();
+			overctx.setLineDash([5,2]);
+			overctx.rect(selx*zoomv,  sely*zoomv,  selw*zoomv,  selh*zoomv);
+			overctx.stroke();
+			}
 
 </script>
 
