@@ -3,7 +3,7 @@
 <head><title>PixelAnimator</title></head>
 <link rel="shortcut icon" type="image/ico" href="favicon.ico" /> 
 <style>*{
--moz-user-select: none; -webkit-user-select: none; -ms-user-select:none; user-select:none;}
+-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}
 canvas{    image-rendering: optimizeSpeed;
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-optimize-contrast;
@@ -11,11 +11,11 @@ canvas{    image-rendering: optimizeSpeed;
     -ms-interpolation-mode: nearest-neighbor;
     }
 	
-#mainoverlay{position:fixed;z-index:100; display:block; pointer-events:none;top:0;left:0;}
+#mainoverlay{/*bindlines*/position:fixed;z-index:1000; display:block; pointer-events:none;top:0;left:0;}
 
 .drawcanv{ position:fixed; }
-#drawoverlay{cursor: url(curpencil.cur),pointer;  position:fixed; z-index:98; }
-#onioncanvas{ position:fixed; z-index:97; }
+#drawoverlay{cursor: url(curpencil.cur),pointer;  position:fixed; z-index:998; }
+#onioncanvas{ position:fixed; z-index:997; }
 .drawheader{background:black; color:white; cursor:move; position:fixed; min-width:100px;top:0; line-height:25px; padding:0px 10px 0px 10px;  transition:color 1s;}
 .drawheader_ina{background:#222222;color:gray;cursor:move;position:fixed; min-width:100px;top:0; line-height:25px; padding:0px 10px 0px 10px; transition:color 0.5s; }
 .drawback{background:green;z-index:-1;position:fixed;}
@@ -24,10 +24,13 @@ canvas{    image-rendering: optimizeSpeed;
 /*FloatingWindow*/
 #fw_new{ 
     visibility:hidden; position:absolute; background:lightgray; border:2px solid #3c3c3c;
-    color:black; z-index:100; width: 200px; height:auto; padding:5px;}
+    color:black; z-index:1001; width: 200px; height:auto; padding:20px;}
+#fw_conf{ 
+    visibility:hidden; position:absolute; background:lightgray; border:2px solid #3c3c3c;
+    color:black; z-index:1001; width: 200px; height:auto; padding:20px;}
 
 .dimmer{background: #000; position: fixed; opacity: .5;
-    top:0; left:0; width:100%; height:100%; z-index:99; 
+    top:0; left:0; width:100%; height:100%; z-index:999; 
 	}
 .colorcube{width:17px;height:17px;border:2px solid black;    background:red; transition:border 0.3s; padding:0px; vertical-align:bottom; }
 .colorcube2{width:17px;height:17px;border:2px solid #333333; background:red; transition:border 0.3s; padding:0px;  vertical-align:bottom; }
@@ -40,13 +43,15 @@ canvas{    image-rendering: optimizeSpeed;
 .blockmenubutton:hover{ background:#FFAA00; }
 .blockmenuface{width:100%; height:100%;}
 
-.menuheader{position:fixed; width:100%; margin:0; top:0; left:0; height:90px; background:black; color:white;}
-.toolpack{ position:absolute;  top:10px; width:270px; display:block;  }
-.tp1{/*tools*/ left:20px;}
-.tp2{ /*edit*/ left:300px;}
-.tp3{ /*file*/ right:250px;} 
-.tp4{/*color*/ right:30px;} 
-.tp5{/*pixan*/ height:100%; left:50%; min-width:200px; margin-left:-150px; text-align:center;}
+.menuheader{position:fixed; width:100%; min-width:1150px; margin:0; top:0; left:0; height:90px; background:black; color:white; }
+.toolpack{ position:relative;  top:10px; width:auto; /*270px;*/ margin-left:10px;margin-right:10px; display:inline-block; }
+.tp1{/*tools*/ float:left; /*left:20px;*/}
+.tp2{ /*edit*/ float:left;/*left:300px;*/}
+
+.tp5{/*pixan*/ position:absolute;  width:220px; height:100%; left:50%; margin-left:-50px; /* min-width:200px; margin-left:-150px;*/ text-align:center;}
+.tp4{/*color*/ float:right;  width:240px;  /*right:30px;*/} 
+.tp3{ /*file*/ float:right;/*right:250px;*/} 
+
 .gradlight{background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,0.47) 100%); /* FF3.6+ */
 	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(255,255,255,0.47))); /* Chrome,Safari4+ */
 	background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,0.47) 100%); /* Chrome10+,Safari5.1+ */
@@ -58,8 +63,20 @@ canvas{    image-rendering: optimizeSpeed;
 	}
 .bindsquare{background:#FFAA00;  position:absolute; width:15px;  height:15px; top:5px; right:5px; cursor:default;}
 .helpbutton{background:#995500; position:absolute; left:10px;top:5px; border:none; font-weight:bold; height:20px; width:50px; transition:background 0.5s;}
-.settingsbutton{background:#555555; position:absolute; left:10px;top:30px; border:none; font-weight:bold; height:20px; width:50px;}
-.helpbutton:hover{background:#FEC80D;}
+.settingsbutton{background:#995500; position:absolute; left:10px;top:30px; border:none; font-weight:bold; height:20px; width:50px; transition:background 0.5s;}
+.helpbutton:hover    {background:#FEC80D;}
+.settingsbutton:hover{background:#FEC80D;}
+.togglebutton{background:#995500;  border:none; font-weight:bold; height:20px; width:auto;/*50px*/ transition:background 0.5s;}
+.togglebutton:hover    {background:#FEC80D;}
+.whitebutton{background:white;  border:none; font-weight:bold; height:20px; width:auto; transition:background 0.5s;}
+.whitebutton:hover    {background:#FEC80D;}
+
+
+input[type=checkbox].css-checkbox { position: absolute; overflow: hidden; clip: rect(0 0 0 0); height:1px; width:1px; margin:-1px; padding:0; border:0; }
+input[type=checkbox].css-checkbox + label.css-label { padding-left:20px; height:15px;  display:inline-block; line-height:15px; background-repeat:no-repeat;
+							                         background-position: 0 0; font-size:15px; vertical-align:middle; cursor:pointer; }
+input[type=checkbox].css-checkbox:checked + label.css-label { background-position: 0 -15px; }
+.css-label{ background-image:url(http://csscheckbox.com/checkboxes/dark-check-orange.png); }
 	</style>
 	
 	
@@ -117,15 +134,7 @@ canvas{    image-rendering: optimizeSpeed;
 	</div>
 	
 	
-	<div class="toolpack tp3">
-		<div class="blockmenubutton" onclick="openfw(document.getElementById('fw_new'))" > <img src="icons/block_newsheet.svg" title="New Spritesheet" class="blockmenuface"></div>
-		<div class="blockmenubutton" onclick="importHandler();" >				<img src="icons/block_opensheet.svg" title="Open Spritesheet" class="blockmenuface"></div>
-		<div class="blockmenubutton" onclick="exportHandler();" >				<img src="icons/block_savesheet.svg" title="Save Spritesheet" class="blockmenuface"></div>
-		<br>
-		<div class="blockmenubutton_ina" onclick=";" > 							<img src="icons/block_newproj.svg" title="New Project" class="blockmenuface"></div>
-		<div class="blockmenubutton_ina" onclick=";" > 							<img src="icons/block_openproj.svg" title="Open Project" class="blockmenuface"></div>
-		<div class="blockmenubutton_ina" onclick=";" > 							<img src="icons/block_saveproj.svg" title="Save Project" class="blockmenuface"></div>
-	</div>
+
 	
 	
 	
@@ -144,13 +153,24 @@ canvas{    image-rendering: optimizeSpeed;
 		 <tr> </tr>
 		</table>
 	</div>
-	<div class="toolpack tp5">
-		<img src="icons/pixan.svg">
-		<input class="helpbutton "type="button" value="HELP" onclick="window.open('pixanhelp.html');">
-		<input class="settingsbutton "type="button" value="CONF" onclick=";">
+	
+	<div class="toolpack tp3">
+		<div class="blockmenubutton" onclick="openfw(document.getElementById('fw_new'))" > <img src="icons/block_newsheet.svg" title="New Spritesheet" class="blockmenuface"></div>
+		<div class="blockmenubutton" onclick="importHandler();" >				<img src="icons/block_opensheet.svg" title="Open Spritesheet" class="blockmenuface"></div>
+		<div class="blockmenubutton" onclick="exportHandler();" >				<img src="icons/block_savesheet.svg" title="Save Spritesheet" class="blockmenuface"></div>
+		<br>
+		<div class="blockmenubutton_ina" onclick=";" > 							<img src="icons/block_newproj.svg" title="New Project" class="blockmenuface"></div>
+		<div class="blockmenubutton_ina" onclick=";" > 							<img src="icons/block_openproj.svg" title="Open Project" class="blockmenuface"></div>
+		<div class="blockmenubutton_ina" onclick=";" > 							<img src="icons/block_saveproj.svg" title="Save Project" class="blockmenuface"></div>
 	</div>
 	
-	<select style=";" onchange="pencilpick(this.value)" id="pencilselect" title="Pencil size">
+	<div class="toolpack tp5">
+		<img src="icons/pixan.svg" style="position:absolute;right:0px;">
+		<input class="helpbutton "type="button" value="HELP" onclick="window.open('pixanhelp.html');">
+		<input class="settingsbutton "type="button" value="CONF" onclick="openfw(document.getElementById('fw_conf'))">
+	</div>
+	
+	<select style="display:none;" onchange="pencilpick(this.value)" id="pencilselect" title="Pencil size">
 		<option value="1">.</option>
 		<option value="2">.</option>
 		<option value="3">+</option>
@@ -170,20 +190,20 @@ canvas{    image-rendering: optimizeSpeed;
 <canvas id="onioncanvas" width="800" height="600" ></canvas> 
 <canvas id="drawback" class="drawback gradlight" width="800" height="600" ></canvas> 
 
-<div id="timelinediv" style="width:100%; height:auto; overflow:scroll; padding:0px; position:fixed; bottom:0; left:0;">
+<div id="timelinediv" style="width:100%; height:auto; overflow:scroll; padding:0px; position:fixed; bottom:0; left:0; z-index:999;">
 	
 	<div id="timelinepicker" style="pointer-events:none; position:absolute; border: 2px solid red; width:50px;height:60px; display:inline-block;">e</div>
 	<div id="timelineonionmin" style="pointer-events:none; position:absolute; border: 2px solid yellow; width:50px;height:60px; display:inline-block; visibility:hidden;"><</div>
 	<div id="timelineonionmax" style="pointer-events:none; position:absolute; border: 2px solid yellow; width:50px;height:60px; display:inline-block; visibility:hidden;">></div>
 </div>
-<div id="viewsettingsdiv" style="width:100%; padding:0px; position:fixed; bottom:0; left:0; background:black; color:white;">
-<button onclick="animate()">Play</button>
+<div id="viewsettingsdiv" style="width:100%; padding:0px; position:fixed; bottom:0; left:0; background:black; color:white; z-index:999;">
+<button id="playbutton" >Play</button>
 
 fps:<input type="number" value=15 min=1 id="fpsinput" style="width:40px;">
 zoom:&#215;<input type="number" value=5 min=1 id="zoominput" style="width:40px;">
 &nbsp &nbsp || &nbsp &nbsp
-<button onclick="toggleOnion()" id="oniButton"> Onion Toggle</button>
-<button onclick="if(drawtrans){aw.drawctx.globalAlpha=1.0;setcurrentframe(currentframe);drawtrans=false} else {aw.drawctx.globalAlpha=0.9;setcurrentframe(currentframe);drawtrans=true}">Toggle Transparency</button>
+<button onclick="toggleOnion()" id="oniButton" class="togglebutton"> Onion Skin</button>
+<button onclick="if(drawtrans){aw.drawctx.globalAlpha=1.0;setcurrentframe(currentframe);drawtrans=false} else {aw.drawctx.globalAlpha=0.9;setcurrentframe(currentframe);drawtrans=true}" class="togglebutton">Transparency</button>
 
 
 
@@ -192,12 +212,24 @@ zoom:&#215;<input type="number" value=5 min=1 id="zoominput" style="width:40px;"
 
 
 <div id="fw_new">
-	New sheet <br>
+	New sheet <br><br>
 	spw <input type="number" value=50 min=1 id="fwv_spw" style="width:40px;"> <br>
 	sph <input type="number" value=60 min=1 id="fwv_sph" style="width:40px;"> <br>
 	count <input type="number" value=12 min=1 id="fwv_count" style="width:40px;"> <br>
-	<button onclick="createnewwindow(document.getElementById('fwv_spw').value,document.getElementById('fwv_sph').value,document.getElementById('fwv_count').value)">New</button> <button onclick="dimmer.click()">Cancel</button>
+	<br>
+	<button onclick="createnewwindow(document.getElementById('fwv_spw').value,document.getElementById('fwv_sph').value,document.getElementById('fwv_count').value)">New</button>
+	<button onclick="dimmer.click()">Cancel</button>
 </div>
+
+<div id="fw_conf">
+	Configuration <br><br>
+	<input id="fwv_roughpencil" class="css-checkbox" type="checkbox" />
+	<label for="fwv_roughpencil" name="fwv_roughpencil_label" class="css-label" title="Blurry but fast pencil movement for slow CPUs">Rough Pencil</label> <br>
+	<input id="demo_box_2" class="css-checkbox" type="checkbox" />
+	<label for="demo_box_2" name="demo_lbl_2" class="css-label" title="Examle option">Disallow speed limit</label> <br>
+	<br>
+	<button onclick="dimmer.click()">Done</button>				
+</div>					
 
 <br>
 
@@ -210,7 +242,7 @@ zoom:&#215;<input type="number" value=5 min=1 id="zoominput" style="width:40px;"
 
 <script src="jquery-1.11.0.min.js"></script>
 <script>
-
+$('#playbutton').click(function(){animate()})
 
 function windowresize() {
             mainoverlay.width = window.innerWidth;
@@ -298,15 +330,20 @@ function trace(mit){
 
 function setzoom(zv){ 
 	aw.zoomv=zoomv=zv;  //c=document.getElementById("drawcanvas");
-	dback.width=overc.width=onionc.width=c.width = spw*zoomv;
-	dback.height=overc.height=onionc.height=c.height = sph*zoomv;
+	dback.width=overc.width= onionc.width= c.width = spw*zoomv;
+	dback.height=overc.height= onionc.height= c.height = sph*zoomv;
 	ctx.imageSmoothingEnabled = false;ctx.webkitImageSmoothingEnabled = false;ctx.mozImageSmoothingEnabled = false;
 	onionctx.imageSmoothingEnabled = false; onionctx.webkitImageSmoothingEnabled = false; onionctx.mozImageSmoothingEnabled = false;
+	
+	tempctx.imageSmoothingEnabled = false; tempctx.webkitImageSmoothingEnabled = false; tempctx.mozImageSmoothingEnabled = false;
+	tempc.style.imageRendering= "crisp-edges"; tempc.style.visibility="hidden";
+	tempc.style.width=spw*zoomv+"px";tempc.style.height=sph*zoomv+"px";
+	
 	ctx.globalAlpha= drawtrans ? 0.9 : 1.0; // 
 	setcurrentframe(currentframe);
 	drawheader.style.width = spw*zoomv - 20 + 'px';
 	
-
+	
 	}
 
 function copy()
@@ -356,6 +393,7 @@ function createnewwindow(width,height,count){
 	realc:document.createElement('canvas'),
 	drawc:document.createElement('canvas'),
 	drawheader:document.createElement('div'),
+	zindex:1,
 	spw:parseInt(width),
 	sph:parseInt(height),
 	spc:parseInt(count),
@@ -375,7 +413,7 @@ function createnewwindow(width,height,count){
 	rec.realc.width=rec.spw*rec.spc;  rec.realc.height=rec.sph; 
 	rec.realc.addEventListener('mousedown',framepick , false);
 	
-	windowList.push(rec);
+
 	
 	
 	
@@ -390,7 +428,9 @@ function createnewwindow(width,height,count){
 	rec.drawheader.parentRec=rec;
 	rec.drawc.className ="drawcanv";
 	
-	
+	windowList.push(rec);
+	rec.zindex = windowList.length;
+	rec.drawheader.style.zIndex = rec.drawc.style.zIndex = rec.zindex;
 	
 	rec.setAsActive = function(){ 
 	/*previously actives*/
@@ -497,6 +537,12 @@ function applytemp()
 {
   ctx.drawImage(tempc, 0, 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);
 }
+
+function applytempFast(xpos,ypos,width,height)
+{
+  //ctx.drawImage(tempc, xpos, ypos,  width, height, xpos, ypos, width, height);
+}
+
 function commitTemp(){ 
 vanselect=false; softselect=false;
 	if(undobuff.length>=undoDepth)undobuff.shift();
@@ -536,15 +582,21 @@ function drawheaderinit(xp,yp){
   var canv = c; var ocanv = overc;
   div.style.top = yp + 'px';
   div.style.left = xp + 'px';
-  dback.style.top=ocanv.style.top=onionc.style.top=canv.style.top = yp + 25 + 'px';
-  dback.style.left=ocanv.style.left=onionc.style.left=canv.style.left = xp + 'px';
+  dback.style.top=ocanv.style.top=onionc.style.top=canv.style.top =tempc.style.top = yp + 25 + 'px';
+  dback.style.left=ocanv.style.left=onionc.style.left=canv.style.left =tempc.style.left = xp + 'px';
   div.getElementsByClassName("bindsquare")[0].addEventListener('contextmenu', rightclickmenu  , false);
   }
 
 function drawheaderdragstart(e){
   if(this.parentRec!=aw)
-     {this.parentRec.setAsActive(); 
-	 drawback.style.transition="opacity 0s"; drawback.style.opacity=0; }
+     { this.parentRec.setAsActive(); 
+	 drawback.style.transition="opacity 0s"; drawback.style.opacity=0; 
+	 
+	 /*sorting*/ for ( var i=0; i<windowList.length;i++ ) {var wind=windowList[i];
+		if(   wind.zindex > aw.zindex  ) {  wind.zindex--; wind.drawheader.style.zIndex = wind.drawc.style.zIndex = wind.zindex; } }  
+		aw.zindex=windowList.length; aw.drawheader.style.zIndex = aw.drawc.style.zIndex = aw.zindex;
+
+	 }
 	 
   if(e.button==0) //leftclick
 	{
@@ -570,10 +622,14 @@ function drawheaderdragmove(e){
   var div = drawheader;
   if(!bindInProgress){// window moving
 	var canv = c; var ocanv = overc;
-	div.style.top = e.clientY -dhdstartY + 'px';
-	div.style.left = e.clientX -dhdstartX+ 'px';
-	dback.style.top=ocanv.style.top=onionc.style.top=canv.style.top = e.clientY -dhdstartY + 25 + 'px';
-	dback.style.left=ocanv.style.left=onionc.style.left=canv.style.left = e.clientX -dhdstartX + 'px';
+	//if(e.clientY>0 && e.clientY<window.innerHeight-(sph+25+20)){
+	trace(drawheader.style.width)
+	var newx = Math.min(  Math.max( -parseInt(drawheader.style.width)+40  ,  e.clientX -dhdstartX  ),  window.innerWidth - 40  )
+	var newy = Math.min(   Math.max( e.clientY  -dhdstartY , 0  ), window.innerHeight - sph -80  );
+	div.style.top = newy + 'px';
+	dback.style.top  =  ocanv.style.top  =  onionc.style.top =   canv.style.top   =  tempc.style.top = newy + 25+ 'px';
+	div.style.left = newx + 'px';
+	dback.style.left =  ocanv.style.left =  onionc.style.left =  canv.style.left  =  tempc.style.left= newx+ 'px';
 	}
   else{ //binding
   mainoverctx.clearRect(0,0,mainoverc.width,mainoverc.height);
@@ -586,10 +642,10 @@ function drawheaderdragmove(e){
 function drawheaderdragend(e){
   window.removeEventListener('mousemove', drawheaderdragmove, true);
   window.removeEventListener('mouseup', drawheaderdragend, true);
-  bindInProgress=false;
-  mainoverctx.clearRect(0,0,mainoverc.width,mainoverc.height);
-  if(document.elementFromPoint(e.clientX,e.clientY).className=='drawheader_ina')
+  
+  if(bindInProgress && document.elementFromPoint(e.clientX,e.clientY).className=='drawheader_ina')  /*bug:script error when out of window*/
 	{aw.bind=document.elementFromPoint(e.clientX,e.clientY).parentRec};
+  if(bindInProgress){bindInProgress=false; mainoverctx.clearRect(0,0,mainoverc.width,mainoverc.height);}
 }
 
 
@@ -677,6 +733,7 @@ var dimmer;
 var ctrlOn=false;
 var shiftOn=false;
 var bindInProgress=false;
+var quickdraw=false; //enable blurry but fast high-res pecil drawing on slow machines
 
 var colorslocked=false;
 var currentColorIndex=0;
@@ -727,8 +784,8 @@ mainoverctx=mainoverc.getContext("2d");
     //aw.realctx = aw.realc.getContext('2d');
 
  tempc = document.createElement('canvas'); 
-document.body.appendChild(tempc);tempc.style.position="fixed";tempc.style.top="100px";tempc.style.left="5px";
- tempc.width=spw;  tempc.height=sph; 
+document.body.appendChild(tempc);tempc.style.position="fixed"; 
+ tempc.width=spw;  tempc.height=sph; tempc.style.zIndex=1;
 
  tempctx = tempc.getContext('2d');
 
@@ -740,7 +797,9 @@ document.body.appendChild(tempc);tempc.style.position="fixed";tempc.style.top="1
 //document.getElementById("timelinediv").appendChild(aw.realc);
 
 $('#fpsinput').bind('input', function() { fpsv=$(this).val(); });/*nem rakhatom c inicializálás elé*/
-$('#zoominput').bind('input', function() { setzoom( $(this).val() ); }  ); /*nem rakhatom ctx beállítások után mert elmos; wtfff*/
+$('#zoominput').bind('input', function() { setzoom( $(this).val() ); }  ); /*nem rakhatom ctx beállítások után mert elmos; */
+$('#fwv_roughpencil').change(function() { quickdraw=this.checked; if(!quickdraw)tempc.style.visibility="hidden";  });
+
 
 
         /*ctx.imageSmoothingEnabled = false;
@@ -945,14 +1004,13 @@ function setCol32(pic,px,py,col){
 	sx = lmx < mx ?  1 : -1;
 	sy = lmy < my ?  1 : -1;
 	err = dx-dy;
-   
+	
 	do{ /*currpos=(Math.floor(lmy/zoomv)*spw+Math.floor(lmx/zoomv))*4;
   		hova.data[currpos  ]=col.r;
 		hova.data[currpos+1]=col.g;
 		hova.data[currpos+2]=col.b;
 		hova.data[currpos+3]=255;*/
 		hova.putImageData(pix,Math.floor(lmx/zoomv),Math.floor(lmy/zoomv));
-		 
 		e2= 2*err;
 		if(e2 > -dy){ err = err - dy; lmx += sx}
         if(e2 < dx){ err = err + dx; lmy+= sy }
@@ -1058,7 +1116,9 @@ function setCol32(pic,px,py,col){
 	this.alternative = false; //colorpick
 	this.tracknum = 0;
 	this.drawbuff =null;
-
+	//overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
+	//tempctx.clearRect(0,0,spw,sph);	
+	var lastmX; var lastmY;
 
     function drawstart (e) { //e.preventDefault(); /*prevent touchscreen autoscroll*/
 	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
@@ -1068,16 +1128,23 @@ function setCol32(pic,px,py,col){
 	 
         tool.started = true;
 		tool.tracknum = 0;
-	 if(!ctrlOn){ //if ctrl then colorpick on move
-		overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
-		//tool.drawbuff = aw.realctx.getImageData( 50*currentframe, 0,  spw,sph);
 		
+		
+		
+	 if(!ctrlOn){ //if ctrl then colorpick on move
+	 
+	  //for performance reasons these are done on selecting the tool
+		overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
 		tempctx.clearRect(0,0,spw,sph);	
-		lastmX=mouseX;
-		lastmY=mouseY;
+		
 	  }
 	  else /*ctrl*/ {tool.alternative=true;}
 
+	  lastmX=mouseX;
+	  lastmY=mouseY;
+	  
+	  
+	  
     };
 	this.touchstart = drawstart;
 	this.mousedown = drawstart; 
@@ -1108,15 +1175,22 @@ function setCol32(pic,px,py,col){
 		//kell aw.realctx.putImageData(tool.drawbuff,50*currentframe, 0);	
 		 if(e.button==2) ctx.globalCompositeOperation="destination-out";
 		 else ctx.globalCompositeOperation="source-over";
-		 applytemp();
+		 
+		 if(!quickdraw || e.button==2) applytemp();
+		 if(quickdraw && e.button!=2){tempc.style.visibility="visible";}
+		 /*if(e.button==2)
+		 else {
+		 } */
+		 
+		 
 		 ctx.globalCompositeOperation="source-over";
 		 //setcurrentframe(currentframe);
-		lastmX=mouseX;
-		lastmY=mouseY;
+		
 
       }
 	  else /*no toolstarted*/
-	  {		overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
+	  {		//overctx.clearRect(0,0,spw*zoomv,sph*zoomv);
+		overctx.clearRect(lastmX-5,lastmY-5,10,10);
 			overctx.beginPath();
 			if(overctx.setLineDash)overctx.setLineDash([0]);
 			selx=Math.floor(mouseX/zoomv);
@@ -1129,6 +1203,10 @@ function setCol32(pic,px,py,col){
 				//colorpick(rgbToHex(p[0],p[1],p[2]));  
 				if(e.button!=2)colorpickchange({m:{r:p[0],g:p[1],b:p[2]}});
 							   colorpickaltchange({m:{r:p[0],g:p[1],b:p[2]}});  }
+							   
+		lastmX=mouseX;
+		lastmY=mouseY;				   
+							   
     };
 	this.touchmove = drawmove;
 	this.mousemove = drawmove;
@@ -1138,6 +1216,9 @@ function setCol32(pic,px,py,col){
 	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
       if (tool.started) {
         tool.mousemove(e);
+		if(quickdraw)tempc.style.visibility="hidden";
+		if(e.button!=2) applytemp(); 
+		
 		if(!tool.alternative){
 			   if(e.button==2) aw.realctx.globalCompositeOperation="destination-out";
 			   else aw.realctx.globalCompositeOperation="source-over";
