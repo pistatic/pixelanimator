@@ -3,7 +3,7 @@
 <head><title>PixelAnimator</title></head>
 <link rel="shortcut icon" type="image/ico" href="favicon.ico" /> 
 <style>*{
--webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}
+-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-tap-highlight-color: rgba(0,0,0,0);}
 canvas{    image-rendering: optimizeSpeed;
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-optimize-contrast;
@@ -85,6 +85,7 @@ input[type=checkbox].css-checkbox:checked + label.css-label { background-positio
 
     <div class="menuheader">
 	<p id="debugp" style="position:absolute; top:80px;left:10px">debug</p>
+	<p id="debugerrorp" style="position:absolute; top:95px;left:10px; color:rgb(255,155,155)">debug</p>
 	<div class="toolpack tp1">
 		<div class="blockmenubutton" onclick="toolpick('pencil')" >				<img src="icons/block_pen.svg" title="Pencil" class="blockmenuface"></div>
 		<div class="blockmenubutton_ina" onclick=";" >							<img src="icons/block_eraser.svg" title="Eraser - use Pencil with Right Click" class="blockmenuface"></div>
@@ -198,6 +199,7 @@ input[type=checkbox].css-checkbox:checked + label.css-label { background-positio
 </div>
 <div id="viewsettingsdiv" style="width:100%; padding:0px; position:fixed; bottom:0; left:0; background:black; color:white; z-index:999;">
 <button id="playbutton" >Play</button>
+<button id="loopplaybutton" >Loop</button>
 
 fps:<input type="number" value=15 min=1 id="fpsinput" style="width:40px;">
 zoom:&#215;<input type="number" value=5 min=1 id="zoominput" style="width:40px;">
@@ -225,6 +227,8 @@ zoom:&#215;<input type="number" value=5 min=1 id="zoominput" style="width:40px;"
 	Configuration <br><br>
 	<input id="fwv_roughpencil" class="css-checkbox" type="checkbox" />
 	<label for="fwv_roughpencil" name="fwv_roughpencil_label" class="css-label" title="Blurry but fast pencil movement for slow CPUs">Rough Pencil</label> <br>
+	<input id="fwv_stickoutline" class="css-checkbox" type="checkbox" />
+	<label for="fwv_stickoutline" name="fwv_stickoutline_label" class="css-label" title="Thickens the Outline tool">Stickman Outline</label> <br>
 	<input id="demo_box_2" class="css-checkbox" type="checkbox" />
 	<label for="demo_box_2" name="demo_lbl_2" class="css-label" title="Examle option">Disallow speed limit</label> <br>
 	<br>
@@ -243,6 +247,7 @@ zoom:&#215;<input type="number" value=5 min=1 id="zoominput" style="width:40px;"
 <script src="jquery-1.11.0.min.js"></script>
 <script>
 $('#playbutton').click(function(){animate()})
+$('#loopplaybutton').click(function(){animloop=true;animate()})
 
 function windowresize() {
             mainoverlay.width = window.innerWidth;
@@ -327,6 +332,8 @@ for(var i=0;i<zoombuff.length;i++){ctx.fillStyle="#000000"; ctx.fillRect((i/aw.r
 
 function trace(mit){
 	document.getElementById("debugp").innerHTML = mit.toString();}
+function traceError(mit){
+	document.getElementById("debugerrorp").innerHTML = mit.toString();}
 
 function setzoom(zv){ 
 	aw.zoomv=zoomv=zv;  //c=document.getElementById("drawcanvas");
@@ -570,10 +577,11 @@ if(!animrunning){currentframe=0;animrunning=true;
    //elem.style.left = ( left += 10 ) + "px";
    setcurrentframe(currentframe);
    currentframe++;
-   if ( currentframe>aw.spc ) {clearInterval( timer ); animrunning=false; currentframe=0; ctx.drawImage(aw.realc, spw*currentframe, 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);}
+   if ( currentframe>aw.spc && !animloop) {clearInterval( timer ); animrunning=false; currentframe=0; ctx.drawImage(aw.realc, spw*currentframe, 0,  spw,sph,0,0,spw*zoomv,sph*zoomv);}
+   else if(currentframe>=aw.spc  && animloop) {currentframe=0;}
    }, 1000/fpsv);
  }else /*if animrunning*/
-   {clearInterval( timer ); animrunning=false; setcurrentframe(currentframe);}
+   {clearInterval( timer ); animrunning=false; animloop=false; setcurrentframe(currentframe);}
 };
 
 
@@ -657,7 +665,7 @@ function drawheaderdragend(e){
 	  function drawevent (e) {
     var func = tool[e.type];
 	
-    if (func) { func(e); }
+    if (func) { try{func(e);}catch(err){traceError(err)} }
   }
   
 function toolpick (e) {
@@ -705,6 +713,7 @@ function toolpick (e) {
  
  var undoDepth=50;
 var animrunning=false;
+var animloop=false;
 
 var windowList=new Array(); /*records of open windows and their settings*/
 
@@ -734,6 +743,7 @@ var ctrlOn=false;
 var shiftOn=false;
 var bindInProgress=false;
 var quickdraw=false; //enable blurry but fast high-res pecil drawing on slow machines
+var stickoutline=false; //stickman-style outline
 
 var colorslocked=false;
 var currentColorIndex=0;
@@ -799,7 +809,7 @@ document.body.appendChild(tempc);tempc.style.position="fixed";
 $('#fpsinput').bind('input', function() { fpsv=$(this).val(); });/*nem rakhatom c inicializálás elé*/
 $('#zoominput').bind('input', function() { setzoom( $(this).val() ); }  ); /*nem rakhatom ctx beállítások után mert elmos; */
 $('#fwv_roughpencil').change(function() { quickdraw=this.checked; if(!quickdraw)tempc.style.visibility="hidden";  });
-
+$('#fwv_stickoutline').change(function() { stickoutline=this.checked;  });
 
 
         /*ctx.imageSmoothingEnabled = false;
@@ -932,7 +942,7 @@ function matchCol(a,b){
 }
 function getCol(pic,px,py){
 	var col=new Object();
-	var pos=(px+py*spw)*4;
+	var pos=(px+py*pic.width)*4;
 	col.r=pic.data[pos];
 	col.g=pic.data[pos+1];
 	col.b=pic.data[pos+2];
@@ -940,14 +950,14 @@ function getCol(pic,px,py){
 	return col;
 }
 function setCol(pic,px,py,col){
-	var pos=(px+py*spw)*4;
+	var pos=(px+py*pic.width)*4;
 	pic.data[pos]=col.r;
 	pic.data[pos+1]=col.g;
 	pic.data[pos+2]=col.b;
 	pic.data[pos+3]=255;
 }
 function setCol32(pic,px,py,col){
-	var pos=(px+py*spw)*4;
+	var pos=(px+py*pic.width)*4;
 	pic.data[pos]=col.r;
 	pic.data[pos+1]=col.g;
 	pic.data[pos+2]=col.b;
@@ -1106,6 +1116,33 @@ function setCol32(pic,px,py,col){
 	return;
   }
   
+  function scale2x(mit,dest){
+	var ret= tempctx.createImageData(mit.width*2,mit.height*2);
+	for(var i=0;i<mit.width;i++)
+	 for(var j=0;j<mit.height;j++)
+		{var basecol=getCol(mit,i,j);
+		 var r1=basecol; var r2=basecol; var r3=basecol; var r4=basecol;
+		 var sa=basecol; var sb=basecol; var sc=basecol; var sd=basecol;
+		 if(j>0){sa=getCol(mit,i,j-1); if(j<mit.height-1)sd=getCol(mit,i,j+1);}
+		 if(i>0){sc=getCol(mit,i-1,j); if(i<mit.width-1) sb=getCol(mit,i+1,j);}
+
+		if(matchCol(sc,sa) && !matchCol(sc,sd) && !matchCol(sa,sb)) r1=sa;
+		if(matchCol(sa,sb) && !matchCol(sa,sc) && !matchCol(sb,sd)) r2=sb;
+		if(matchCol(sb,sd) && !matchCol(sb,sa) && !matchCol(sd,sc)) r4=sd;
+		if(matchCol(sd,sc) && !matchCol(sd,sb) && !matchCol(sc,sa)) r3=sc;
+		
+		setCol32(ret,i*2,  j*2,  r1);
+		setCol32(ret,i*2+1,j*2,  r2);
+		setCol32(ret,i*2,  j*2+1,r3);
+		setCol32(ret,i*2+1,j*2+1,r4);
+		}
+  tempctx.clearRect(0,0,spw,sph);			
+		tempctx.putImageData(ret,selx,sely);
+		setcurrentframe(currentframe); applytemp();//dest=ret; 
+		movebuff=ret; selw*=2; selh*=2;
+  }
+  
+  
   
 
   var tools = {}; 
@@ -1121,9 +1158,15 @@ function setCol32(pic,px,py,col){
 	var lastmX; var lastmY;
 
     function drawstart (e) { //e.preventDefault(); /*prevent touchscreen autoscroll*/
+	trace(e.type + " 1 "+e.clientX)
+	if(e.type=="mousedown"){ 
 	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
 	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
-
+	}
+	else if(e.type=="touchstart"){
+	mouseX=parseInt(e.changedTouches[0].clientX + $(document).scrollLeft() - $(overc).offset().left);
+	mouseY=parseInt(e.changedTouches[0].clientY + $(document).scrollTop() - $(overc).offset().top);
+	}
 		
 	 
         tool.started = true;
@@ -1143,16 +1186,24 @@ function setCol32(pic,px,py,col){
 	  lastmX=mouseX;
 	  lastmY=mouseY;
 	  
-	  
-	  
+	  trace("aa "+mouseX+" "+mouseY);
+	
     };
 	this.touchstart = drawstart;
 	this.mousedown = drawstart; 
 
-
+	
     function drawmove (e) {  //e.preventDefault(); 
+	trace(e.type+tool.started)
+	if(e.type=="mousemove"){ trace(mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left));
 	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
 	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
+	}
+	else if(e.type=="touchmove"){ trace(parseInt(e.changedTouches[0].clientX + $(document).scrollLeft() - $(overc).offset().left));
+	 //tool.started = true;
+	mouseX=parseInt(e.changedTouches[0].clientX + $(document).scrollLeft() - $(overc).offset().left);
+	mouseY=parseInt(e.changedTouches[0].clientY + $(document).scrollTop() - $(overc).offset().top);
+	}
 	
 
 	
@@ -1166,8 +1217,10 @@ function setCol32(pic,px,py,col){
 		
 		
 		
-		if(e.button==0)drawdataline2(tempctx,drawpixel,lastmX,lastmY,mouseX,mouseY);
+		
 		if(e.button==2)drawdataline2(tempctx,erasepixel,lastmX,lastmY,mouseX,mouseY);
+		/*if(e.button==0 )*/else drawdataline2(tempctx,drawpixel,lastmX,lastmY,mouseX,mouseY);
+		
 		//trace(e.button);
 		
 	//document.getElementById("debugp").innerHTML=mouseX.toString();
@@ -1215,7 +1268,7 @@ function setCol32(pic,px,py,col){
 	mouseX=(e.clientX + $(document).scrollLeft() - $(overc).offset().left);
 	mouseY=(e.clientY + $(document).scrollTop() - $(overc).offset().top);
       if (tool.started) {
-        tool.mousemove(e);
+        //tool.mousemove(e);
 		if(quickdraw)tempc.style.visibility="hidden";
 		if(e.button!=2) applytemp(); 
 		
@@ -1613,15 +1666,19 @@ function outline(){
 
 	for(var i=0; i<drawbuff.data.length/4; i++)
 	{if(drawbuff.data[i*4+3]==0 && 
-	    ((samplebuff.data[i*4-4+3]!=0 && i%spw>0)
-	  || (samplebuff.data[i*4+4+3]!=0 && i%spw<spw-1)
-	  || (samplebuff.data[(i*4)-(spw*4)+3]!=0 && i>spw) 
-	  || (samplebuff.data[(i*4)+(spw*4)+3]!=0 && i<drawbuff.data.length/4-spw)  
-	  //stick-brawler specials:
-	  //|| (samplebuff.data[i*4+8+3]!=0 && i%spw<spw-2)
-	  //|| (samplebuff.data[(i*4)-(spw*8)+3]!=0 && i>spw*2) 
-	  //|| (samplebuff.data[(i*4)-(spw*4)+4 +3]!=0 && i>spw && i%spw<spw-1)
-	  ) 
+	   ( 
+			  ((samplebuff.data[i*4-4+3]!=0 && i%spw>0)
+			|| (samplebuff.data[i*4+4+3]!=0 && i%spw<spw-1)
+			|| (samplebuff.data[(i*4)-(spw*4)+3]!=0 && i>spw) 
+			|| (samplebuff.data[(i*4)+(spw*4)+3]!=0 && i<drawbuff.data.length/4-spw))	
+	  || 
+		//stick-brawler specials:
+		  (stickoutline &&
+			 ((samplebuff.data[i*4+8+3]!=0 && i%spw<spw-2)
+			|| (samplebuff.data[(i*4)-(spw*8)+3]!=0 && i>spw*2) 
+			|| (samplebuff.data[(i*4)-(spw*4)+4 +3]!=0 && i>spw && i%spw<spw-1))
+	      )
+		)
 	  ) drawbuff.data[i*4+3]=255;}
 	
 	tempctx.putImageData(drawbuff,0,0);
@@ -1830,6 +1887,9 @@ function keyPress(e) { //e.preventDefault(); e.stopPropagation();
 	  if (evtobj.keyCode == 13 ) animate(); //enter
 	  shiftOn = evtobj.shiftKey ? true : false;
 	  ctrlOn =  evtobj.ctrlKey  ? true : false;
+	  
+	 //temp 
+	  if (evtobj.keyCode == 65) scale2x(movebuff,movebuff); // a
 }
 
 window.onkeydown = keyPress;
