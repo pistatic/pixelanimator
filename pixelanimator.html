@@ -492,7 +492,7 @@ function createnewwindow(width,height,count){
 
 
 function framepick(e){if(!animrunning){ commitTemp();
- mouseX=(event.pageX - $(document).scrollLeft() - $(aw.realc).offset().left);
+ mouseX=(e.pageX - $(document).scrollLeft() - $(aw.realc).offset().left);
  var framenum=Math.floor(mouseX/spw);
  if(e.button==0){ currentframe=framenum }
  if(e.button==2 && aw.onion){if(framenum<currentframe) aw.onimin=currentframe-framenum;
@@ -1218,20 +1218,20 @@ function setCol32(pic,px,py,col){
 		
 		
 		
-		if(e.button==2)drawdataline2(tempctx,erasepixel,lastmX,lastmY,mouseX,mouseY);
-		/*if(e.button==0 )*/else drawdataline2(tempctx,drawpixel,lastmX,lastmY,mouseX,mouseY);
+		if(e.buttons==2)drawdataline2(tempctx,erasepixel,lastmX,lastmY,mouseX,mouseY);
+		/*if(e.buttons==0 )*/else drawdataline2(tempctx,drawpixel,lastmX,lastmY,mouseX,mouseY);
 		
 		//trace(e.button);
 		
 	//document.getElementById("debugp").innerHTML=mouseX.toString();
 	//	aw.realctx.putImageData(tool.drawbuff,50*currentframe, 0,Math.min(lastmX,mouseX)/zoomv,Math.min(lastmY,mouseY)/zoomv,Math.abs(lastmX-mouseX)/zoomv,Math.abs(lastmY-mouseY)/zoomv);	//alert(Math.min(lastmY,mouseY)-1)
 		//kell aw.realctx.putImageData(tool.drawbuff,50*currentframe, 0);	
-		 if(e.button==2) ctx.globalCompositeOperation="destination-out";
+		 if(e.buttons==2) ctx.globalCompositeOperation="destination-out";
 		 else ctx.globalCompositeOperation="source-over";
 		 
-		 if(!quickdraw || e.button==2) applytemp();
-		 if(quickdraw && e.button!=2){tempc.style.visibility="visible";}
-		 /*if(e.button==2)
+		 if(!quickdraw || e.buttons==2) applytemp();
+		 if(quickdraw && e.buttons!=2){tempc.style.visibility="visible";}
+		 /*if(e.buttons==2)
 		 else {
 		 } */
 		 
