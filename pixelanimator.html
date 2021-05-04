@@ -300,11 +300,11 @@ function setTimelinePicker(){ //set
   var tlonimin=document.getElementById("timelineonionmin");
   var tlonimax=document.getElementById("timelineonionmax");
   
-  tlpicker.style.left=(currentframe*spw+5).toString()+"px"; 
+  tlpicker.style.left=(currentframe*spw*downscale+5).toString()+"px"; 
   tlpicker.innerHTML=currentframe; 
    if(aw.onion){
-	tlonimin.style.left=((currentframe-aw.onimin)*spw+5).toString()+"px"; 
-	tlonimax.style.left=((currentframe+aw.onimax)*spw+5).toString()+"px"; 
+	tlonimin.style.left=((currentframe-aw.onimin)*spw*downscale+5).toString()+"px"; 
+	tlonimax.style.left=((currentframe+aw.onimax)*spw*downscale+5).toString()+"px"; 
    }
   }
 
@@ -313,13 +313,13 @@ function setupTimelinePicker(){ //setup
   var tlonimin=document.getElementById("timelineonionmin");
   var tlonimax=document.getElementById("timelineonionmax");
   tlpicker.style.color="red";
-  tlpicker.style.width = tlonimin.style.width = tlonimax.style.width = (spw-10).toString()+"px";
-  tlpicker.style.height = tlonimin.style.height = tlonimax.style.height = (sph-10).toString()+"px";
+  tlpicker.style.width = tlonimin.style.width = tlonimax.style.width = (spw*downscale-10).toString()+"px";
+  tlpicker.style.height = tlonimin.style.height = tlonimax.style.height = (sph*downscale-10).toString()+"px";
   tlpicker.style.top  = tlonimin.style.top = tlonimax.style.top = "5px";
 
   setTimelinePicker();
 
-  viewsettingsdiv.style.bottom=(sph+25).toString() +"px"; 
+  viewsettingsdiv.style.bottom=(Math.min(sph,100)+25).toString() +"px"; 
 }
 
 
@@ -406,6 +406,7 @@ function createnewwindow(width,height,count){
 	spc:parseInt(count),
 	currentframe:0,
 	zoomv:4,
+	downscale:Math.min(100/parseInt(height), 1),
 	fpsv:15,
 	onion:false,
 	onimin:0,
@@ -417,7 +418,9 @@ function createnewwindow(width,height,count){
 	}
 	rec.drawctx=rec.drawc.getContext('2d');
 	rec.realctx=rec.realc.getContext('2d');
-	rec.realc.width=rec.spw*rec.spc;  rec.realc.height=rec.sph; 
+	rec.realc.width=rec.spw*rec.spc;  rec.realc.height=rec.sph;
+	rec.realc.style.maxHeight = "100px"
+
 	rec.realc.addEventListener('mousedown',framepick , false);
 	
 
@@ -454,7 +457,7 @@ function createnewwindow(width,height,count){
 	drawheader=rec.drawheader;
 	currentWindowId=rec.id;
 	//aw.realc=rec.realc;
-	//aw.realctx=rec.realc.getContext('2d'); /*aw.realctx-et nem kell tárolni?*/ de
+	//aw.realctx=rec.realc.getContext('2d'); /*aw.realctx-et nem kell tï¿½rolni?*/ de
 	c=rec.drawc;
 	ctx=rec.drawctx;
 	
@@ -463,6 +466,7 @@ function createnewwindow(width,height,count){
 	spc=rec.spc;
 	currentframe=rec.currentframe;
 	zoomv=rec.zoomv;
+	downscale=rec.downscale;
 	fpsv=rec.fpsv;
 	//onion=rec.onion; onimin=rec.onimin; onimax=rec.onimax;
 	
@@ -493,7 +497,7 @@ function createnewwindow(width,height,count){
 
 function framepick(e){if(!animrunning){ commitTemp();
  mouseX=(e.pageX - $(document).scrollLeft() - $(aw.realc).offset().left);
- var framenum=Math.floor(mouseX/spw);
+ var framenum=Math.floor(mouseX/(spw*downscale));
  if(e.button==0){ currentframe=framenum }
  if(e.button==2 && aw.onion){if(framenum<currentframe) aw.onimin=currentframe-framenum;
 						else if(framenum>currentframe) aw.onimax=framenum-currentframe;}
@@ -565,7 +569,7 @@ overctx.clearRect(0,0,aw.spw*zoomv,aw.sph*zoomv);
 
 
 
-	//requestinterval csak 60fps-nél kellene
+	//requestinterval csak 60fps-nÃ©l kellene
 	var timer;
 function animate()
 {
@@ -723,6 +727,7 @@ var aw=new Object(); //ActiveWindow
 var drawtrans=false;
 var drawheader;
 var zoomv=5;
+var downscale =1;
 var fpsv=15;
 var currentframe=0;
 var spw=50; //spritewidth
@@ -806,8 +811,8 @@ document.body.appendChild(tempc);tempc.style.position="fixed";
 //document.body
 //document.getElementById("timelinediv").appendChild(aw.realc);
 
-$('#fpsinput').bind('input', function() { fpsv=$(this).val(); });/*nem rakhatom c inicializálás elé*/
-$('#zoominput').bind('input', function() { setzoom( $(this).val() ); }  ); /*nem rakhatom ctx beállítások után mert elmos; */
+$('#fpsinput').bind('input', function() { fpsv=$(this).val(); });/*nem rakhatom c inicializÃ¡lÃ¡s elÃ©*/
+$('#zoominput').bind('input', function() { setzoom( $(this).val() ); }  ); /*nem rakhatom ctx beÃ¡llÃ­tÃ¡sok utÃ¡n mert elmos; */
 $('#fwv_roughpencil').change(function() { quickdraw=this.checked; if(!quickdraw)tempc.style.visibility="hidden";  });
 $('#fwv_stickoutline').change(function() { stickoutline=this.checked;  });
 
@@ -988,7 +993,7 @@ function setCol32(pic,px,py,col){
    end loop
    */
 //currpos=(Math.floor(mouseY/zoomv)*spw+Math.floor(mouseX/zoomv))*4;
-  function drawdataline(hova,pixcol,lmx,lmy,mx,my){ //kimásolja a frame-t, datát módosít, visszamásol 
+  function drawdataline(hova,pixcol,lmx,lmy,mx,my){ //kimï¿½solja a frame-t, datï¿½t mï¿½dosï¿½t, visszamï¿½sol 
 	dx = Math.abs(mx-lmx);
 	dy = Math.abs(my-lmy);
 	sx = lmx < mx ?  1 : -1;
@@ -1008,7 +1013,7 @@ function setCol32(pic,px,py,col){
 		}while(lmx!=mx || lmy!=my);
   };
   
-   function drawdataline2(hova,pix,lmx,lmy,mx,my){ /*érdemesebb lenne kész x y poz-t adni?*/
+   function drawdataline2(hova,pix,lmx,lmy,mx,my){ /*ï¿½rdemesebb lenne kï¿½sz x y poz-t adni?*/
 	dx = Math.abs(mx-lmx);
 	dy = Math.abs(my-lmy);
 	sx = lmx < mx ?  1 : -1;
@@ -1433,7 +1438,7 @@ tools.rectselect = function () {
 		temp1=Math.min(sely,sely+selh); temp2=Math.max(sely,sely+selh);
 		sely=temp1; selh=temp2-temp1;
 		
-			//hangyák: overctx.lineDashOffset = 2;
+			//hangyÃ¡k: overctx.lineDashOffset = 2;
 		//cutrect
 		//aw.realctx.fillRect(selx+spw*currentframe,sely,selw,selh); setcurrentframe(currentframe);
 		vanselect=(selw!=0 && selh!=0);
@@ -1800,7 +1805,7 @@ function exportstart(e)
  }
 
 
-function importHandler() { //var r=confirm("szöveg"); if(r)...
+function importHandler() { //var r=confirm("szÃ¶veg"); if(r)...
 	document.getElementById('uploadimage').click();
  }
 function filepick(e){ //for import
@@ -1985,7 +1990,7 @@ function paste_createImage(source){
 	
 */	
 
-/*VERZIÓ 2*/
+/*VERZIÃ“ 2*/
 
 if (!window.Clipboard) {
    var pasteCatcher = document.createElement("div");
